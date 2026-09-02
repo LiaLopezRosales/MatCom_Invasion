@@ -192,6 +192,17 @@ Validation: `make native` + `make test` + `make wasm` + `npm run build` verdes;
 smoke test headless (`web/smoke.test.mjs`, Playwright) confirma batch de 6 en
 Progressive, timer en Random/Alternate y sin errores de consola.
 
+### Ronda 2 (soporte usuario)
+
+1. **Música silenciosa** → `AudioContext` arranca `suspended`; se añadió
+   `ctx.resume()` en `AudioEngine.init()` (y pads también en el menú).
+   → `web/src/audio.ts`
+2. **Descripciones de modos** en lenguaje de usuario (sin jerga técnica: se
+   eliminaron SJF/Round Robin/FIFO/determinista). → `web/src/main.ts`
+3. **High score persistente** por modo vía `localStorage` (la sesión nueva
+   empieza sin high score; se guarda al caer en Game Over o Victoria y se muestra
+   en HUD/overlays). → `web/src/main.ts`
+
 ## Fase 6 — CI + deploy GitHub Pages
 
 > Pipeline de CI/CD via GitHub Actions. Detalle en [`FASE6_CI.md`](./FASE6_CI.md).

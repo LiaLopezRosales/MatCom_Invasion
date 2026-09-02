@@ -87,6 +87,48 @@ await waitForTimerVisible(false);
 t = await hasTimer();
 console.log("Formations no-timer OK");
 
+// ── high-score persistence ──
+await page.evaluate(() => {
+  localStorage.setItem("matcom_highscores", JSON.stringify({ 0: 1234, 2: 999 }));
+});
+await playUntilPlaying(0); // progressive (mode 0)
+await page.waitForFunction(
+  () => document.getElementById("hud-high").textContent === "1234",
+  undefined, { timeout: 4000 },
+);
+const hudHigh = await page.locator("#hud-high").textContent();
+if (hudHigh.trim() !== "1234") {
+  console.error("FAIL hud high-score not loaded from localStorage ->", hudHigh);
+  process.exit(1);
+}
+console.log("HUD high-score from localStorage OK:", hudHigh.trim());
+
+// set a new higher score and confirm the HUD reflects it on the next frame
+await page.evaluate(() => {
+  localStorage.setItem("matcom_highscores", JSON.stringify({ 0: 5000 }));
+});
+await page.waitForFunction(
+  () => document.getElementById("hud-high").textContent === "5000",
+  undefined, { timeout: 4000 },
+);
+const hudHigh2 = await page.locator("#hud-high").textContent();
+if (hudHigh2.trim() !== "5000") {
+  console.error("FAIL hud high-score not updated ->", hudHigh2);
+  process.exit(1);
+}
+console.log("HUD high-score update OK:", hudHigh2.trim());
+
+// ── user-friendly mode descriptions (no jargon) ──
+const descText = await page.evaluate(() => {
+  const cards = document.getElementById("menu-mode");
+  return cards.innerHTML;
+});
+if (/SJF|Round Robin|FIFO|Deterministic|weakest-first|interleave|shuffled/.test(descText)) {
+  console.error("FAIL: jargon found in mode descriptions");
+  process.exit(1);
+}
+console.log("Mode descriptions jargon-free OK");
+
 await page.screenshot({ path: "/tmp/opencode/smoke-final.png" });
 await browser.close();
 

@@ -31,7 +31,10 @@ export class AudioEngine {
 
   /** Must be called from a user gesture (browser autoplay policy). */
   async init(): Promise<void> {
-    if (this.ctx) return;
+    if (this.ctx) {
+      await this.ctx.resume();
+      return;
+    }
     const Ctx =
       window.AudioContext ||
       (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -41,12 +44,14 @@ export class AudioEngine {
     this.master.connect(this.ctx.destination);
 
     this.musicGain = this.ctx.createGain();
-    this.musicGain.gain.value = 0.15; // ambient, not foreground
+    this.musicGain.gain.value = 0.15;
     this.musicGain.connect(this.master);
 
     this.sfxGain = this.ctx.createGain();
     this.sfxGain.gain.value = 0.5;
     this.sfxGain.connect(this.master);
+
+    await this.ctx.resume();
   }
 
   setMuted(m: boolean): boolean {
@@ -112,15 +117,14 @@ export class AudioEngine {
       this.musicNote(when, this.freq(root), "sine", this.stepDur() * 3.5, 0.16);
     }
 
-    // pad chord: long, slow, airy on every other bar
-    if (state !== "menu") {
-      if (inBar === 0 || inBar === 8) {
-        const third = root + 3;
-        const fifth = root + 7;
-        this.musicNote(when, this.freq(root + 12), "sine", this.stepDur() * 15, 0.05);
-        this.musicNote(when, this.freq(third + 12), "sine", this.stepDur() * 15, 0.04);
-        this.musicNote(when, this.freq(fifth + 12), "sine", this.stepDur() * 15, 0.04);
-      }
+    // pad chord: long, slow, airy on every bar
+    if (inBar === 0 || inBar === 8) {
+      const third = root + 3;
+      const fifth = root + 7;
+      const padVol = state === "menu" ? 0.08 : 0.05;
+      this.musicNote(when, this.freq(root + 12), "sine", this.stepDur() * 15, padVol);
+      this.musicNote(when, this.freq(third + 12), "sine", this.stepDur() * 15, padVol * 0.8);
+      this.musicNote(when, this.freq(fifth + 12), "sine", this.stepDur() * 15, padVol * 0.8);
     }
 
     // melodic arpeggio: only during play/intense; moves up the pentatonic

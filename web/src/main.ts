@@ -4,11 +4,11 @@ import { AudioEngine } from "./audio";
 import "./styles.css";
 
 const MODE_META: Record<number, { name: string; win: string; desc: string }> = {
-  [GameMode.PROGRESSIVE]: { name: "Progressive", win: "Reach 500 pts", desc: "Enemies spawn weakest-first (SJF)." },
-  [GameMode.ALTERNATE]: { name: "Alternate", win: "10 kills in 30s", desc: "Enemy types interleave (Round Robin)." },
-  [GameMode.RANDOM]: { name: "Random", win: "Survive 45s", desc: "Deterministic shuffled spawns (FIFO)." },
-  [GameMode.WAVES]: { name: "Waves", win: "Clear 5 waves", desc: "Enemies arrive in bursts." },
-  [GameMode.FORMATIONS]: { name: "Formations", win: "Reach level 6", desc: "Enemies descend in blocks." },
+  [GameMode.PROGRESSIVE]: { name: "Progressive", win: "Reach 500 pts", desc: "The weak come first. Difficulty ramps up each wave." },
+  [GameMode.ALTERNATE]: { name: "Alternate", win: "10 kills in 30s", desc: "All enemy types mix together. Kill fast, kill smart." },
+  [GameMode.RANDOM]: { name: "Random", win: "Survive 45s", desc: "Random hordes from all types. Just stay alive." },
+  [GameMode.WAVES]: { name: "Waves", win: "Clear 5 waves", desc: "Enemies arrive in bursts. One wave at a time." },
+  [GameMode.FORMATIONS]: { name: "Formations", win: "Reach level 6", desc: "Structured squadrons descend. Break them apart." },
 };
 
 const ENEMY_CAP = 10;
@@ -19,6 +19,22 @@ const WIN_RANDOM_SURVIVAL = 45;
 const WIN_ALTERNATE_TIME = 30;
 
 const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
+
+// ── high-score persistence (per-mode, localStorage) ──
+const HS_KEY = "matcom_highscores";
+function loadHighScores(): Record<number, number> {
+  try { return JSON.parse(localStorage.getItem(HS_KEY) || "{}"); } catch { return {}; }
+}
+function saveHighScore(mode: number, score: number): void {
+  const hs = loadHighScores();
+  if (!hs[mode] || score > hs[mode]) {
+    hs[mode] = score;
+    try { localStorage.setItem(HS_KEY, JSON.stringify(hs)); } catch { /* quota */ }
+  }
+}
+function getHighScore(mode: number): number {
+  return loadHighScores()[mode] || 0;
+}
 
 function blankSnapshot(): GameSnapshot {
   return {
@@ -100,7 +116,7 @@ async function main(): Promise<void> {
 
   function updateHud(s: GameSnapshot): void {
     hudScore.textContent = String(s.score);
-    hudHigh.textContent = String(s.high_score);
+    hudHigh.textContent = String(getHighScore(s.mode));
     hudLevel.textContent = String(s.current_level);
     hudMode.textContent = MODE_META[s.mode]?.name ?? "?";
     hudLives.innerHTML = "";
@@ -135,17 +151,19 @@ async function main(): Promise<void> {
       case GameState.PAUSED: showMenu(menuPause); break;
       case GameState.GAME_OVER:
         running = false;
+        saveHighScore(s.mode, s.score);
         audio.play("gameover");
         goScore.textContent = String(s.score);
-        goBest.textContent = String(s.high_score);
+        goBest.textContent = String(getHighScore(s.mode));
         showMenu(menuGameOver);
         setMusic("menu");
         break;
       case GameState.VICTORY:
         running = false;
+        saveHighScore(s.mode, s.score);
         audio.play("victory");
         vicScore.textContent = String(s.score);
-        vicBest.textContent = String(s.high_score);
+        vicBest.textContent = String(getHighScore(s.mode));
         showMenu(menuVictory);
         setMusic("menu");
         break;
