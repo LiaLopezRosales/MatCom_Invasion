@@ -147,4 +147,51 @@ de `game_create(seed, ...)`.
 - [`POLISH_PLAN.md`](./POLISH_PLAN.md) — plan general (las fases).
 - [`GAME_DESIGN.md`](./GAME_DESIGN.md) — el engine que se testea (Fase 1).
 - [`FASE4_FEATURES.md`](./FASE4_FEATURES.md) — contenido de juego (lógica) que
-  estos tests validan.
+  la cobertura ampliada validará.
+
+## Estado de implementación (2026-09-02)
+
+Fase 2 implementada y verificada (commits `33bf89e` + `fccf09e`). La suite
+contiene **50 tests** en un solo binario nativo (`tests/`, Criterion 2.4.1),
+ejecutables con `make test` desde la raíz y desde `tests/`.
+
+### Cobertura (make coverage, gcov)
+
+| Módulo | % líneas |
+|---|---|
+| `collision.c` | 100.00% |
+| `difficulty.c` | 100.00% |
+| `projectile.c` | 100.00% |
+| `game.c` | 99.28% |
+| `enemy.c` | 93.55% |
+| `scheduler.c` | 89.53% |
+| **Total** | **95.86%** |
+
+### Bugs extra descubiertos por los tests y corregidos
+
+Más allá de validar los defectos heredados (A1–A8 de `FASE3_QUALITY`), la suite
+expuso **dos bugs reales del engine de la Fase 1** que se corrigieron:
+
+1. **Progresivo/SJF no ordenaba por vida ascendente** (`scheduler.c`): generaba
+   una distribución por ratio (posiciones), no un orden *shortest-job-first*.
+   Corregido: `generate_progressive` ordena por vida ascendente (más débil
+   primero), testeado por `test_scheduling.c`.
+2. **Movimiento no independiente de la tasa de frames** (`enemy.c`): `y +=
+   (int)(speed*dt)` truncaba a int cada frame → el recorrido dependía del nº de
+   frames. Corregido con acumuladores float `fx`/`fy` y derivando `x`/`y`
+   enteros al final de `update_enemies`; validado por
+   `test_movement.c::enemies_move_independent_of_frame_count`.
+
+También se añadió **sanitización de `dt`** en `game_update` (clamp a `[0,1.0]`)
+para cumplir el requisito de `test_movement.c` sobre valores extremos (0,
+negativo y muy grande), validado por `negative_dt_is_sanitized` y
+`large_dt_is_clamped`.
+
+### Pendiente / diferido deliberadamente
+
+- `game_fire` **no tiene cooldown** (dispara si hay slot libre): la recarga es
+  una feature de la Fase 4 (cadencia/tipo de disparo), no un defecto de Fase 2.
+- Tests de contenido ampliado (`test_spawn_events.c`, `test_wincondition_f4.c`,
+  `test_enemy_types.c`, `test_powerups.c`, `test_lives.c`) corresponden a
+  features de la **Fase 4** y se implementarán con ese contenido.
+- Verificación E2E en navegador del juego completo → Fase 5.

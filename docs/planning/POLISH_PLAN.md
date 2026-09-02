@@ -208,6 +208,19 @@ Resumen (entorno híbrido):
 8. **Fase 7** — LICENSE + eliminar legacy + trackear docs + AGENTS.md + verificación
    final (DoD).
 
+## Progreso de fases
+
+| Fase | Estado |
+|---|---|
+| 0 — Entorno | ✅ completa (emsdk 6.0.9, `PHASE0_ENVIRONMENT.md`) |
+| 1 — Migración del engine | ✅ completa (`fe1db18`, `2299172`) |
+| 2 — Tests del engine | ✅ completa (`33bf89e`, `fccf09e`; 50 tests, cobertura 95.86%) |
+| 3 — Calidad / bugs | ⏳ pendiente (catálogo A resuelto en F2; restan §B/§C/robustez) |
+| 4 — Contenido y dirección | ⏳ pendiente (spec listo) |
+| 5 — Frontend + README | ⏳ pendiente |
+| 6 — CI + GitHub Pages | ⏳ pendiente |
+| 7 — Governance y verificación | ⏳ pendiente |
+
 ## Decisiones abiertas / por confirmar
 
 - [x] Entorno: arquitectura híbrida (C→WASM + TypeScript/Vite), single-thread,
