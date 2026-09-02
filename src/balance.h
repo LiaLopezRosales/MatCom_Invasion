@@ -44,6 +44,14 @@
 #define WIN_WAVES_COUNT        5       /* SURVIVE_N_WAVES target */
 #define WIN_FORMATIONS_LEVEL   5       /* REACH_LEVEL target */
 
+/* ── Enemy type mix thresholds (used by the schedulers) ─────────── */
+#define NUM_ENEMY_TYPES       5      /* Grunt, Tank, Dart, Hover, Swarm */
+#define MIX_GRUNT_CUTOFF     0.4f   /* cumulative ratio below -> Grunt */
+#define MIX_TANK_CUTOFF      0.6f
+#define MIX_DART_CUTOFF      0.75f
+#define MIX_HOVER_CUTOFF     0.9f
+/* above MIX_HOVER_CUTOFF -> Swarm */
+
 /* ── Waves / Formations modes ───────────────────────────────────── */
 #define WAVE_ENEMIES_PER_WAVE  3       /* enemies spawned per wave burst */
 #define FORMATION_COLS         5       /* formation columns */

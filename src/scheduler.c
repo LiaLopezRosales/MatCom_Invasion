@@ -1,5 +1,6 @@
 #include "scheduler.h"
 #include "enemy.h"
+#include "balance.h"
 #include <string.h>
 
 static unsigned int xorshift32(unsigned int *state) {
@@ -11,13 +12,18 @@ static unsigned int xorshift32(unsigned int *state) {
     return x;
 }
 
+/* canonical enemy-type ordering (matches enemy_type_t, 0..NUM_ENEMY_TYPES-1) */
+static const enemy_type_t ALL_TYPES[NUM_ENEMY_TYPES] = {
+    ENEMY_GRUNT, ENEMY_TANK, ENEMY_DART, ENEMY_HOVER, ENEMY_SWARM
+};
+
 static enemy_type_t get_type_for_index(int index, int total) {
     if (total <= 0) return ENEMY_GRUNT;
     float ratio = (float)index / (float)total;
-    if (ratio < 0.4f) return ENEMY_GRUNT;
-    if (ratio < 0.6f) return ENEMY_TANK;
-    if (ratio < 0.75f) return ENEMY_DART;
-    if (ratio < 0.9f) return ENEMY_HOVER;
+    if (ratio < MIX_GRUNT_CUTOFF) return ENEMY_GRUNT;
+    if (ratio < MIX_TANK_CUTOFF)  return ENEMY_TANK;
+    if (ratio < MIX_DART_CUTOFF)  return ENEMY_DART;
+    if (ratio < MIX_HOVER_CUTOFF) return ENEMY_HOVER;
     return ENEMY_SWARM;
 }
 
@@ -48,10 +54,8 @@ static void generate_progressive(game_t *game) {
 
 static void generate_alternate(game_t *game) {
     int count = game->max_enemies;
-    enemy_type_t types[] = {ENEMY_GRUNT, ENEMY_TANK, ENEMY_DART, ENEMY_HOVER, ENEMY_SWARM};
-    int num_types = 5;
     for (int i = 0; i < count; i++)
-        game->enemies[i].type = types[i % num_types];
+        game->enemies[i].type = ALL_TYPES[i % NUM_ENEMY_TYPES];
 }
 
 static void generate_random(game_t *game) {
@@ -74,19 +78,16 @@ static void generate_waves(game_t *game) {
     /* A single wave is one immediate batch. Distribute the five enemy types so
        each wave is a varied mix, and rotate the mix with the wave number so
        successive waves differ (still deterministic from the seed). */
-    enemy_type_t types[] = {ENEMY_GRUNT, ENEMY_TANK, ENEMY_DART, ENEMY_HOVER, ENEMY_SWARM};
-    const int num_types = 5;
-    int rotation = (int)(game->waves_completed % (unsigned int)num_types);
+    int rotation = (int)(game->waves_completed % (unsigned int)NUM_ENEMY_TYPES);
     for (int i = 0; i < count; i++)
-        game->enemies[i].type = types[(i + rotation) % num_types];
+        game->enemies[i].type = ALL_TYPES[(i + rotation) % NUM_ENEMY_TYPES];
 }
 
 static void generate_formations(game_t *game) {
     int count = game->max_enemies;
-    int cols = 5;
     for (int i = 0; i < count; i++) {
-        int row = i / cols;
-        int col = i % cols;
+        int row = i / FORMATION_COLS;
+        int col = i % FORMATION_COLS;
         if (row == 0)
             game->enemies[i].type = ENEMY_GRUNT;
         else if (row == 1)
