@@ -35,7 +35,7 @@ $(WASM_OUT)/matcom_logic.js: $(SRCS) | $(WASM_OUT)
 		-s MODULARIZE=1 \
 		-s EXPORT_NAME='createMatComModule' \
 		-s EXPORTED_FUNCTIONS='["_game_create","_game_destroy","_game_set_mode","_game_start","_game_update","_game_set_ship","_game_fire","_game_get_state","_malloc","_free"]' \
-		-s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]' \
+		-s EXPORTED_RUNTIME_METHODS='["ccall","cwrap","HEAPU8"]' \
 		-s ENVIRONMENT='web'
 
 test:
