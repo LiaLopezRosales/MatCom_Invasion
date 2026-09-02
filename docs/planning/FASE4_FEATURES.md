@@ -5,6 +5,10 @@
 > victoria, tipos de enemigos y otros detalles). La **dirección de arte/UI/audio**
 > está en [`FASE4_DESIGN.md`](./FASE4_DESIGN.md). Solo lógica C: los tests de la
 > Fase 2 y la sim headless validan todo lo decidido aquí.
+>
+> **Estado (2026-09-02):** contenido lógico implementado (Waves/Formations,
+> snapshot enriquecido; power-ups fuera de scope). La **dirección de arte, HUD,
+> menús y audio** se implementa en la Fase 5.
 
 ## 1. Modos de scheduling (5)
 
