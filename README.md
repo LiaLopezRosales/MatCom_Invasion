@@ -176,7 +176,7 @@ npm run preview           # serve the production build locally
 ## Testing & quality
 
 - **C engine**: 78 unit + simulation tests via [Criterion](https://criterion.readthedocs.io/),
-  run with AddressSanitizer and UndefinedBehaviorSanitizer. Coverage ~97%.
+  run with AddressSanitizer and UndefinedBehaviorSanitizer. Coverage 97.15%.
 - **Compilation**: strict warnings as errors (`-Werror`), `-Wall -Wextra`.
 - **Frontend**: TypeScript strict + `vite build` and an automated headless browser
   smoke test.
@@ -208,8 +208,7 @@ make coverage   # optional, requires gcov/lcov
 - **CI/CD is live**: GitHub Actions runs native + WASM tests and builds, and
   deploys `web/dist` to GitHub Pages on every push to `main` (see
   `docs/planning/FASE6_CI.md` and the CI badge above).
-- Real in-browser **screenshots** will be added to this README after initial
-  deployment.
+- Real in-browser **screenshots** are shown above (captured from the live demo).
 
 ---
 
