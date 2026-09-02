@@ -20,12 +20,21 @@ Test(scheduling, progressive_sorts_by_life_ascending) {
     game_destroy(g);
 }
 
-Test(scheduling, progressive_starts_with_grunt) {
+Test(scheduling, progressive_starts_weakest_first) {
     game_t *g = game_create(2);
     game_set_mode(g, MODE_PROGRESSIVE);
     game_start(g);
-    cr_assert(g->enemies[0].type == ENEMY_GRUNT,
-              "Progressive lowest-life enemy should be Grunt");
+
+    /* Shortest-Job-First: the first enemy released carries the lowest life of
+       the whole batch (Swarm=1 will precede Grunt=3 now that batches are richer). */
+    int min_life = get_enemy_type_data(g->enemies[0].type)->life;
+    for (int i = 1; i < g->max_enemies; i++) {
+        int life = get_enemy_type_data(g->enemies[i].type)->life;
+        if (life < min_life) min_life = life;
+    }
+    cr_assert(get_enemy_type_data(g->enemies[0].type)->life == min_life,
+              "progressive should open with the weakest enemy (life %d), got %d",
+              min_life, get_enemy_type_data(g->enemies[0].type)->life);
     game_destroy(g);
 }
 

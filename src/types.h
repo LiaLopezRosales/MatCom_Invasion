@@ -89,6 +89,9 @@ typedef struct {
     int enemy_count;
     int enemies_destroyed;
 
+    /* ── gameplay data (Fase 5) ── */
+    float survival_timer;
+
     /* ── render data (Fase 4) ── */
     game_mode_t mode;
     int enemy_x[MAX_ENEMIES];
@@ -106,7 +109,7 @@ typedef struct {
    the byte size must equal (11 scalars + 5*MAX_ENEMIES + 3*MAX_PROJECTILES) * 4.
    If this ever changes, update SNAPSHOT_FIELDS in web/src/game.ts in sync. */
 _Static_assert(sizeof(game_state_snapshot_t) ==
-               (11 + 5 * MAX_ENEMIES + 3 * MAX_PROJECTILES) * sizeof(int),
+               (12 + 5 * MAX_ENEMIES + 3 * MAX_PROJECTILES) * sizeof(int),
                "game_state_snapshot_t layout must match web/src/game.ts SNAPSHOT_FIELDS");
 
 #endif

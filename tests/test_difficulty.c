@@ -5,7 +5,7 @@
 Test(difficulty, level1_is_minimum) {
     difficulty_t d;
     difficulty_init(&d, 1);
-    cr_assert(d.enemy_count == 4, "level 1 should have 4 enemies");
+    cr_assert(d.enemy_count == 6, "level 1 should have 6 enemies");
     cr_assert(d.enemy_count <= MAX_ENEMIES);
     cr_assert(d.spawn_interval > 0.0f, "spawn interval must be positive");
     cr_assert(d.base_speed > 0.0f, "base speed must be positive");

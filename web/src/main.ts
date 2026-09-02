@@ -6,13 +6,17 @@ import "./styles.css";
 const MODE_META: Record<number, { name: string; win: string; desc: string }> = {
   [GameMode.PROGRESSIVE]: { name: "Progressive", win: "Reach 500 pts", desc: "Enemies spawn weakest-first (SJF)." },
   [GameMode.ALTERNATE]: { name: "Alternate", win: "10 kills in 30s", desc: "Enemy types interleave (Round Robin)." },
-  [GameMode.RANDOM]: { name: "Random", win: "Survive 60s", desc: "Deterministic shuffled spawns (FIFO)." },
+  [GameMode.RANDOM]: { name: "Random", win: "Survive 45s", desc: "Deterministic shuffled spawns (FIFO)." },
   [GameMode.WAVES]: { name: "Waves", win: "Clear 5 waves", desc: "Enemies arrive in bursts." },
   [GameMode.FORMATIONS]: { name: "Formations", win: "Reach level 6", desc: "Enemies descend in blocks." },
 };
 
 const ENEMY_CAP = 10;
 const PROJECTILE_CAP = 15;
+const INITIAL_LIVES = 3;
+
+const WIN_RANDOM_SURVIVAL = 45;
+const WIN_ALTERNATE_TIME = 30;
 
 const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
 
@@ -20,7 +24,7 @@ function blankSnapshot(): GameSnapshot {
   return {
     state: GameState.MENU, score: 0, high_score: 0, lives: 3, current_level: 1,
     ship_x: 0, ship_y: 0, projectile_count: 0, enemy_count: 0, enemies_destroyed: 0,
-    mode: 0, enemy_x: new Int32Array(ENEMY_CAP), enemy_y: new Int32Array(ENEMY_CAP),
+    survival_timer: 0, mode: 0, enemy_x: new Int32Array(ENEMY_CAP), enemy_y: new Int32Array(ENEMY_CAP),
     enemy_active: new Int32Array(ENEMY_CAP), enemy_type: new Int32Array(ENEMY_CAP),
     enemy_life: new Int32Array(ENEMY_CAP),
     projectile_x: new Int32Array(PROJECTILE_CAP), projectile_y: new Int32Array(PROJECTILE_CAP),
@@ -43,6 +47,7 @@ async function main(): Promise<void> {
   const hudLevel = $<HTMLSpanElement>("hud-level");
   const hudMode = $<HTMLSpanElement>("hud-mode");
   const hudHigh = $<HTMLSpanElement>("hud-high");
+  const hudTimer = $<HTMLSpanElement>("hud-timer");
 
   const menuMode = $<HTMLDivElement>("menu-mode");
   const menuHowto = $<HTMLDivElement>("menu-howto");
@@ -64,6 +69,7 @@ async function main(): Promise<void> {
   // ── state tracking ──
   let snap = blankSnapshot();
   let lastState = GameState.MENU;
+  let lastLives = 3;
   let running = false;
   let musicKey: string | null = null;
   let lastTime = performance.now();
@@ -86,6 +92,8 @@ async function main(): Promise<void> {
   function startGame(mode: number): void {
     game.setMode(mode);
     game.start();
+    lastLives = INITIAL_LIVES;
+    renderer.reset();
     audio.play("click");
     showMenu(null);
   }
@@ -102,6 +110,17 @@ async function main(): Promise<void> {
       img.className = "hud-life-icon";
       if (i >= s.lives) img.classList.add("lost");
       hudLives.appendChild(img);
+    }
+
+    // countdown timer for timed modes
+    if (s.mode === GameMode.RANDOM) {
+      hudTimer.hidden = false;
+      hudTimer.textContent = Math.max(0, Math.ceil(WIN_RANDOM_SURVIVAL - s.survival_timer)) + "s";
+    } else if (s.mode === GameMode.ALTERNATE) {
+      hudTimer.hidden = false;
+      hudTimer.textContent = Math.max(0, Math.ceil(WIN_ALTERNATE_TIME - s.survival_timer)) + "s";
+    } else {
+      hudTimer.hidden = true;
     }
   }
 
@@ -156,6 +175,10 @@ async function main(): Promise<void> {
     if (running) game.update(dt);
     tryFire();
     snap = game.getState();
+    if (snap.state === GameState.PLAYING && snap.lives < lastLives) {
+      renderer.triggerDamageFlash();
+    }
+    lastLives = snap.lives;
     updateHud(snap);
     renderer.draw(snap, now / 1000);
 
@@ -219,6 +242,8 @@ async function main(): Promise<void> {
 
   const restart = (): void => {
     audio.play("click");
+    lastLives = INITIAL_LIVES;
+    renderer.reset();
     game.start();
   };
   $<HTMLButtonElement>("btn-restart").addEventListener("click", restart);
@@ -264,6 +289,9 @@ async function main(): Promise<void> {
       loading.style.display = "none";
       shell.hidden = false;
       requestAnimationFrame(frame);
+      // small test hooks so headless checks can inspect live game state & start modes
+      (window as unknown as { __snap?: () => GameSnapshot; __start?: (m: number) => void }).__snap = () => game.getState();
+      (window as unknown as { __start?: (m: number) => void }).__start = (m: number) => startGame(m);
     })
     .catch((err) => {
       loadingError.textContent = `Failed to start: ${(err as Error).message}`;

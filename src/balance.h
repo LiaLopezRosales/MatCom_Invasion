@@ -25,10 +25,10 @@
 #define SWARM_SWING_FACTOR     3.0f    /* swarm lateral oscillation amplitude factor */
 
 /* ── Difficulty formula constants ───────────────────────────────── */
-#define DIFF_BASE_ENEMIES      4       /* enemy_count at level 1 */
-#define DIFF_ENEMIES_PER_LVL   2       /* extra enemies per level */
-#define DIFF_BASE_INTERVAL     2.0f    /* spawn_interval at level 1 (seconds) */
-#define DIFF_INTERVAL_DECAY    0.1f    /* interval reduction per level */
+#define DIFF_BASE_ENEMIES      6       /* batch initial for Progressive/Alternate/Random */
+#define DIFF_ENEMIES_PER_LVL   1       /* +1 enemy per batch cleared */
+#define DIFF_BASE_INTERVAL     1.8f    /* spawn_interval at level 1 (seconds) */
+#define DIFF_INTERVAL_DECAY    0.3f    /* interval reduction per level */
 #define DIFF_MIN_INTERVAL      0.4f    /* spawn_interval floor */
 #define DIFF_BASE_SPEED        80.0f   /* enemy base speed at level 1 */
 #define DIFF_SPEED_PER_LVL     5.0f    /* speed increase per level */
@@ -40,7 +40,7 @@
 #define WIN_PROGRESSIVE_SCORE  500     /* SCORE_THRESHOLD for Progressive */
 #define WIN_ALTERNATE_KILLS    10      /* KILL_X_WITHIN_TIME for Alternate */
 #define WIN_ALTERNATE_TIME     30.0f   /* time window (seconds) */
-#define WIN_RANDOM_SURVIVAL    60.0f   /* SURVIVAL_TIME for Random */
+#define WIN_RANDOM_SURVIVAL    45.0f   /* SURVIVAL_TIME for Random */
 #define WIN_WAVES_COUNT        5       /* SURVIVE_N_WAVES target */
 #define WIN_FORMATIONS_LEVEL   5       /* REACH_LEVEL target */
 

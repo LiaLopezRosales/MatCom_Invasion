@@ -59,7 +59,7 @@ static void configure_win_condition(game_t *game) {
 static void spawn_immediate_batch(game_t *game);
 static int compute_formation_size(int level);
 static int count_active_enemies(const game_t *game);
-static void check_wave_progression(game_t *game);
+static void check_batch_progression(game_t *game);
 
 void game_start(game_t *game) {
     if (!game) return;
@@ -88,15 +88,13 @@ void game_start(game_t *game) {
     if (game->mode == MODE_WAVES) {
         game->max_enemies = WAVE_ENEMIES_PER_WAVE;
         game->waves_completed = 0;
-        spawn_immediate_batch(game);
     } else if (game->mode == MODE_FORMATIONS) {
         game->current_level = 1;
         game->max_enemies = compute_formation_size(game->current_level);
-        spawn_immediate_batch(game);
     } else {
         game->max_enemies = game->difficulty.enemy_count;
-        scheduler_generate_order(game);
     }
+    spawn_immediate_batch(game);
 }
 
 static void spawn_immediate_batch(game_t *game) {
@@ -173,8 +171,6 @@ static void check_win_condition(game_t *game) {
 void game_update(game_t *game, float dt) {
     if (!game || game->state != STATE_PLAYING) return;
 
-    // Sanitize dt: reject negative and cap oversized frames so timers and
-    // movement stay deterministic and never run backwards (Phase 2).
     if (dt < 0.0f) dt = 0.0f;
     if (dt > 1.0f) dt = 1.0f;
 
@@ -183,39 +179,38 @@ void game_update(game_t *game, float dt) {
     if (game->invuln_timer > 0.0f)
         game->invuln_timer -= dt;
 
-    game->spawn_timer += dt;
-    if (game->mode != MODE_WAVES && game->mode != MODE_FORMATIONS &&
-        game->enemies_spawned < game->max_enemies &&
-        game->spawn_timer >= game->difficulty.spawn_interval) {
-        game->spawn_timer = 0.0f;
-        spawn_enemy(game);
-    }
-
     update_projectiles(game, dt);
     update_enemies(game, dt);
     check_collisions(game);
-    check_wave_progression(game);
+    check_batch_progression(game);
     check_win_condition(game);
 }
 
-static void check_wave_progression(game_t *game) {
-    if (game->mode != MODE_WAVES && game->mode != MODE_FORMATIONS) return;
-    /* never advance the wave/level once the game has ended (e.g. an enemy
-       reached the bottom this frame and set GAME_OVER in update_enemies). */
+static void check_batch_progression(game_t *game) {
     if (game->state != STATE_PLAYING) return;
-
-    /* wave/formation cleared only once every enemy of it has spawned and died */
     if (count_active_enemies(game) > 0) return;
     if (game->enemies_spawned < game->max_enemies) return;
 
-    if (game->mode == MODE_WAVES) {
-        game->waves_completed++;
-        spawn_immediate_batch(game);
-    } else { /* MODE_FORMATIONS */
-        game->current_level++;
-        game->max_enemies = compute_formation_size(game->current_level);
-        spawn_immediate_batch(game);
+    switch (game->mode) {
+        case MODE_WAVES:
+            game->waves_completed++;
+            break;
+
+        case MODE_FORMATIONS:
+            game->current_level++;
+            game->max_enemies = compute_formation_size(game->current_level);
+            break;
+
+        case MODE_PROGRESSIVE:
+        case MODE_ALTERNATE:
+        case MODE_RANDOM:
+            game->current_level++;
+            difficulty_init(&game->difficulty, game->current_level);
+            game->max_enemies = game->difficulty.enemy_count;
+            break;
     }
+
+    spawn_immediate_batch(game);
 }
 
 void game_pause(game_t *game) {
@@ -266,5 +261,6 @@ void game_get_state(const game_t *game, game_state_snapshot_t *snap) {
     }
 
     snap->enemies_destroyed = game->enemies_destroyed;
+    snap->survival_timer = game->survival_timer;
     snap->mode = game->mode;
 }

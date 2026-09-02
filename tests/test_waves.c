@@ -222,7 +222,10 @@ Test(snapshot, contains_render_data) {
     game_set_mode(g, MODE_PROGRESSIVE);
     game_start(g);
 
-    /* force some enemies into play (skip spawn interval by teleporting) */
+    /* forced a precise scene: clear the batch-spawned enemies, then drop
+       exactly one active enemy and projectile into known positions. */
+    for (int i = 0; i < MAX_ENEMIES; i++)
+        g->enemies[i].active = 0;
     g->enemies[0].active = 1;
     g->enemies[0].type = ENEMY_GRUNT;
     g->enemies[0].life = 3;
@@ -257,10 +260,16 @@ Test(snapshot, inactive_slots_are_zeroed) {
     game_set_mode(g, MODE_RANDOM);
     game_start(g);
 
+    /* the fresh batch has spawned enemies; deactivate them to assert that
+       inactive slots are always surfaced as inactive/zero in the snapshot. */
+    for (int i = 0; i < MAX_ENEMIES; i++)
+        g->enemies[i].active = 0;
+    for (int i = 0; i < MAX_PROJECTILES; i++)
+        g->projectiles[i].active = 0;
+
     game_state_snapshot_t snap;
     game_get_state(g, &snap);
 
-    /* fresh game: no enemies/projectiles yet */
     cr_assert(snap.enemy_count == 0, "no enemies should be reported yet");
     cr_assert(snap.projectile_count == 0, "no projectiles should be reported yet");
     for (int i = 0; i < MAX_ENEMIES; i++)

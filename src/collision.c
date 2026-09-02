@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define PROJECTILE_HIT_RADIUS 15
-#define SHIP_HIT_RADIUS 40
+#define SHIP_HIT_RADIUS 26
 
 static int boxes_overlap(int x1, int y1, int r1, int x2, int y2, int r2) {
     int dx = abs(x1 - x2);

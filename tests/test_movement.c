@@ -65,19 +65,29 @@ Test(movement, enemies_reaching_bottom_cause_game_over) {
     game_destroy(g);
 }
 
-Test(movement, spawn_respects_interval) {
+Test(movement, starts_with_immediate_full_batch) {
     game_t *g = game_create(1);
     game_set_mode(g, MODE_PROGRESSIVE);
     game_start(g);
 
-    // At level 1 spawn_interval is 2.0s. At 1.5s no enemy should have spawned.
-    for (int i = 0; i < 90; i++) game_update(g, 1.0f / 60.0f); // 1.5s
-    cr_assert(g->enemies_spawned == 0, "before 2s no enemy should spawn, got %d", g->enemies_spawned);
+    /* the batch modes spawn their entire batch instantly (no gradual timer). */
+    cr_assert(g->enemies_spawned == g->max_enemies,
+              "full batch should spawn immediately: spawned=%d max=%d",
+              g->enemies_spawned, g->max_enemies);
 
-    // After 4.4s total, spawns happen at 2.0s and 4.0s -> 2 spawned
-    for (int i = 0; i < 174; i++) game_update(g, 1.0f / 60.0f); // +2.9s = 4.4s
-    cr_assert(g->enemies_spawned == 2,
-              "at ~4.4s with 2s interval exactly 2 enemies spawned, got %d", g->enemies_spawned);
+    int active = 0;
+    for (int i = 0; i < MAX_ENEMIES; i++)
+        if (g->enemies[i].active) active++;
+    cr_assert(active == g->max_enemies,
+              "all spawned enemies should be active right away");
+
+    /* after clearing the batch, a fresh one is respawned. */
+    for (int i = 0; i < MAX_ENEMIES; i++)
+        g->enemies[i].active = 0;
+    game_update(g, 1.0f / 60.0f);
+    cr_assert(g->enemies_spawned >= g->max_enemies,
+              "clearing a batch should recycle and respawn, spawned=%d max=%d",
+              g->enemies_spawned, g->max_enemies);
     game_destroy(g);
 }
 

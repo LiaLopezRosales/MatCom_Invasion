@@ -11,6 +11,7 @@ export interface GameSnapshot {
   projectile_count: number;
   enemy_count: number;
   enemies_destroyed: number;
+  survival_timer: number;
 
   mode: number;
   enemy_x: Int32Array;
@@ -27,7 +28,7 @@ const MAX_ENEMIES = 10;
 const MAX_PROJECTILES = 15;
 
 export const SNAPSHOT_FIELDS =
-  10 + // base scalar fields (see order in game_state_snapshot_t)
+  11 + // base scalar fields (state..survival_timer, see order in game_state_snapshot_t)
   1 + // mode
   MAX_ENEMIES * 5 + // enemy x/y/active/type/life
   MAX_PROJECTILES * 3; // projectile x/y/active
@@ -104,7 +105,7 @@ export class Game {
       const projectile_y = new Int32Array(MAX_PROJECTILES);
       const projectile_active = new Int32Array(MAX_PROJECTILES);
 
-      let o = 10; // after the base scalars
+      let o = 11; // after the base scalars (incl. survival_timer at index 10)
       const mode = view.getInt32(o * 4, true);
       o++;
       for (let i = 0; i < MAX_ENEMIES; i++, o++) enemy_x[i] = view.getInt32(o * 4, true);
@@ -127,6 +128,7 @@ export class Game {
         projectile_count: view.getInt32(28, true),
         enemy_count: view.getInt32(32, true),
         enemies_destroyed: view.getInt32(36, true),
+        survival_timer: view.getFloat32(40, true),
         mode,
         enemy_x,
         enemy_y,

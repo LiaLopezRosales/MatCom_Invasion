@@ -163,6 +163,35 @@ Resumen (entorno híbrido):
   C→WASM, quick-start, controles, estructura, dependencias, limitaciones, cita
   Kenney (CC0).
 
+### Correcciones post-revisión (feedback visual)
+
+Aplicadas tras revisión del frontend desplegado (concisa; toda lógica en `src/`):
+
+1. **Tarjetas de modo** en negro ilegibles → `color: var(--text)`; **layout vertical**
+   (`flex-direction: column`, una debajo de otra). → `web/src/styles.css`
+2. **Música no repetitiva**: motor reescrito — bucle de 64 pasos (~15 s), bass
+   drone + pads en rotación (Am→F→C→G) + arpegios pentatónicos; menú = drone+pads,
+   juego = + arpegio; Waves = BPM 150 mayor; volumen ambiental reducido.
+   → `web/src/audio.ts`
+3. **Modos originales rediseñados** al patrón "batch → clear → reponer → escalar":
+   Progressive = SJF (más débil primero), Alternate = Round Robin, Random = shuffle
+   determinista; spawn del batch completo al iniciar. → `src/game.c`
+4. **Condición de victoria alcanzable**: `DIFF_BASE_ENEMIES 6`, `DIFF_ENEMIES_PER_LVL 1`
+   (Progressive 6 enemigos = 520 pts ≥ 500; Alternate 10 kills; Random sobrevivir 45 s).
+   → `src/balance.h`
+5. **Velocidades rediseñadas** (no triviales): Grunt 120, Tank 80, Dart 240,
+   Hover 110, Swarm 180 px/s. → `src/enemy.c`
+6. **Temporizador visible** en Random/Alternate (`survival_timer` en el snapshot,
+   ahora 12 escalares + mode; `_Static_assert` actualizado). → `src/types.h`,
+   `web/src/game.ts`, `web/index.html`, `web/src/main.ts`, `web/src/render.ts`
+7. **Feedback de colisión**: `SHIP_HIT_RADIUS 26` (detección más temprana), flash
+   rojo de daño, parpadeo de invulnerabilidad y explosiones de partículas al
+   destruir enemigos. → `src/collision.c`, `web/src/render.ts`
+
+Validation: `make native` + `make test` + `make wasm` + `npm run build` verdes;
+smoke test headless (`web/smoke.test.mjs`, Playwright) confirma batch de 6 en
+Progressive, timer en Random/Alternate y sin errores de consola.
+
 ## Fase 6 — CI + deploy GitHub Pages
 
 > Pipeline de CI/CD via GitHub Actions. Detalle en [`FASE6_CI.md`](./FASE6_CI.md).
@@ -240,6 +269,10 @@ Resumen (entorno híbrido):
 - [x] Fase 5 (frontend): canvas 1920×1080, HTML overlay HUD, audio Web Audio,
       fullscreen toggle, polish (loading/error/toggle/transiciones). →
       `FASE5_FRONTEND.md`
+- [x] Correcciones post-revisión (F5): tarjetas verticales legibles, música no
+      repetitiva, modos originales → batch/clear/escalar, balance alcanzable
+      (enemigos/velocidades), timer en Random/Alternate, feedback de colisión.
+      → sección "Correcciones post-revisión" de `POLISH_PLAN.md`
 - [x] Fase 6 (CI): GitHub Actions (test+build+deploy), triggers main+PRs, cache
       emsdk, deploy desde Actions a Pages. → `FASE6_CI.md`
 - [x] Fase 7 (governance): MIT, eliminar legacy, AGENTS.md completo, DoD final.

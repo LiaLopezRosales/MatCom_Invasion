@@ -4,11 +4,11 @@
 #include <math.h>
 
 static const enemy_type_data_t ENEMY_DATA[] = {
-    [ENEMY_GRUNT] = {3, 80.0f, 60.0f, 2.0f, 50},
-    [ENEMY_TANK]  = {8, 40.0f, 80.0f, 1.5f, 150},
-    [ENEMY_DART]  = {2, 160.0f, 0.0f, 0.0f, 100},
-    [ENEMY_HOVER] = {4, 80.0f, 50.0f, 3.0f, 120},
-    [ENEMY_SWARM] = {1, 120.0f, 30.0f, 5.0f, 25},
+    [ENEMY_GRUNT] = {3, 80.0f, 120.0f, 2.0f, 50},
+    [ENEMY_TANK]  = {8, 40.0f,  80.0f, 1.5f, 150},
+    [ENEMY_DART]  = {2, 160.0f, 240.0f, 0.0f, 100},
+    [ENEMY_HOVER] = {4, 80.0f, 110.0f, 3.0f, 120},
+    [ENEMY_SWARM] = {1, 120.0f, 180.0f, 5.0f, 25},
 };
 
 const enemy_type_data_t *get_enemy_type_data(enemy_type_t type) {

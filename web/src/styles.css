@@ -244,14 +244,14 @@ canvas {
 }
 
 .mode-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 16px;
-  width: min(1100px, 92vw);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(480px, 92vw);
 }
 
 .mode-card {
-  padding: 18px 16px;
+  padding: 14px 16px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: var(--bg-panel);
@@ -271,6 +271,7 @@ canvas {
   font-size: 17px;
   letter-spacing: 1px;
   margin-bottom: 6px;
+  color: var(--text);
 }
 
 .mode-card p {
@@ -377,6 +378,16 @@ canvas {
   letter-spacing: 1px;
 }
 
+/* ── HUD timer (Random / Alternate) ───────────────────────────── */
+.hud-timer {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+  letter-spacing: 1px;
+  margin-left: auto;
+}
+
 @media (max-width: 720px) {
   .hud-label {
     display: none;
@@ -388,12 +399,18 @@ canvas {
     gap: 14px;
   }
   .mode-cards {
-    grid-template-columns: 1fr 1fr;
+    width: min(360px, 92vw);
+  }
+  .mode-card h3 {
+    font-size: 15px;
+  }
+  .mode-card p {
+    font-size: 11px;
   }
 }
 
 @media (max-width: 500px) {
   .mode-cards {
-    grid-template-columns: 1fr;
+    width: 95vw;
   }
 }
