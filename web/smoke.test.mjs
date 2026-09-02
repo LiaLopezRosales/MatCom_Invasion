@@ -1,6 +1,6 @@
 import { chromium } from "playwright";
 
-const BASE = "http://localhost:4173";
+const BASE = process.env.BASE_URL ?? "http://localhost:4173";
 
 const errs = [];
 const browser = await chromium.launch();
