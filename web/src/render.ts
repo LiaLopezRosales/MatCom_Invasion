@@ -94,14 +94,14 @@ export class Renderer {
 
   async load(): Promise<void> {
     const [shipRaw, ...enemyRaws] = await Promise.all([
-      loadImage("/assets/sprites/ship.png"),
-      loadImage("/assets/sprites/enemy_grunt.png"),
-      loadImage("/assets/sprites/enemy_tank.png"),
-      loadImage("/assets/sprites/enemy_dart.png"),
-      loadImage("/assets/sprites/enemy_hover.png"),
-      loadImage("/assets/sprites/enemy_swarm.png"),
+      loadImage("assets/sprites/ship.png"),
+      loadImage("assets/sprites/enemy_grunt.png"),
+      loadImage("assets/sprites/enemy_tank.png"),
+      loadImage("assets/sprites/enemy_dart.png"),
+      loadImage("assets/sprites/enemy_hover.png"),
+      loadImage("assets/sprites/enemy_swarm.png"),
     ]);
-    const laserRaw = await loadImage("/assets/sprites/laser_red.png").catch(() => null);
+    const laserRaw = await loadImage("assets/sprites/laser_red.png").catch(() => null);
 
     const enemyColors = this.enemyColors();
     this.ship = tint(shipRaw, "#00e5ff");

@@ -75,6 +75,17 @@ Mostrar en el README como señal de rigor del pipeline.
 - Test falla → pipeline rojo, no se deploya.
 - Badge visible en el README con estado correcto.
 
+## Estado de implementación
+
+- [x] Workflow `.github/workflows/deploy.yml` definido (triggers main+PRs, build
+      C/WASM/web, test con ASan/UBSan, deploy desde Actions a Pages).
+- [x] `web/vite.config.ts` crea el build con `base: './'` — los assets de
+      `web/public/` se referencian con rutas relativas (`assets/...`) en
+      `render.ts`/`main.ts`, para que carguen bajo el subpath de GitHub Pages.
+- [x] Badge de CI en el README (repo `LiaLopezRosales/MatCom_Invasion`).
+- [ ] **Pendiente (se cierra al primer push a `main`):** ejecución real del
+      pipeline en Actions, habilitar Pages en Settings, y añadir screenshots.
+
 ## Relacionado
 
 - [`POLISH_PLAN.md`](./POLISH_PLAN.md) — las fases de ejecución.

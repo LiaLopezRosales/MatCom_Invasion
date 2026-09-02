@@ -122,7 +122,7 @@ async function main(): Promise<void> {
     hudLives.innerHTML = "";
     for (let i = 0; i < 3; i++) {
       const img = document.createElement("img");
-      img.src = "/assets/sprites/ship.png";
+      img.src = "assets/sprites/ship.png";
       img.className = "hud-life-icon";
       if (i >= s.lives) img.classList.add("lost");
       hudLives.appendChild(img);

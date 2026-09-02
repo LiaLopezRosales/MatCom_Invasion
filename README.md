@@ -4,6 +4,8 @@ A modern, neon-styled re-imagining of a classic retro arcade game, rebuilt as a
 hybrid **C → WebAssembly + TypeScript/Vite** app. The entire game engine runs in
 compiled C (ported to WASM), while the UI is a TypeScript SPA.
 
+[![CI](https://github.com/LiaLopezRosales/MatCom_Invasion/actions/workflows/deploy.yml/badge.svg)](https://github.com/LiaLopezRosales/MatCom_Invasion/actions/workflows/deploy.yml)
+
 This is a portfolio project demonstrating a clean migration from a monolithic C
 codebase into a maintainable, tested, multi-platform game.
 
@@ -29,8 +31,10 @@ codebase into a maintainable, tested, multi-platform game.
 
 ## Play it
 
-> A live demo link and in-browser screenshots are added once the project is
-> deployed via GitHub Pages (see [`docs/planning/FASE6_CI.md`](docs/planning/FASE6_CI.md)).
+> 🕹️ **Play the live demo:** <https://lia.lopezrosales.github.io/MatCom_Invasion/>
+>
+> Deployed automatically to GitHub Pages by the [CI pipeline](.github/workflows/deploy.yml)
+> on every push to `main`.
 
 
 ---
@@ -201,10 +205,11 @@ make coverage   # optional, requires gcov/lcov
 - **Touch support** is not implemented (mouse/keyboard focused).
 - **Power-ups** were deliberately de-scoped in Phase 4 (kept the engine focused);
   listed as future work.
-- **Demo deployment** is the next step — GitHub Pages via GitHub Actions, including
-  a `make` + coverage + WASM + web build pipeline and a CI badge (see
-  `docs/planning/FASE6_CI.md`).
-- Real in-browser **screenshots** will be added to this README after deployment.
+- **CI/CD is live**: GitHub Actions runs native + WASM tests and builds, and
+  deploys `web/dist` to GitHub Pages on every push to `main` (see
+  `docs/planning/FASE6_CI.md` and the CI badge above).
+- Real in-browser **screenshots** will be added to this README after initial
+  deployment.
 
 ---
 
