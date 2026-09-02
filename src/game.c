@@ -4,6 +4,7 @@
 #include "projectile.h"
 #include "collision.h"
 #include "difficulty.h"
+#include "balance.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,7 +14,7 @@ game_t *game_create(unsigned int seed) {
 
     game->rng_state = seed;
     game->state = STATE_MENU;
-    game->lives = 3;
+    game->lives = INITIAL_LIVES;
     game->high_score = 0;
     game->current_level = 1;
 
@@ -33,24 +34,24 @@ static void configure_win_condition(game_t *game) {
     switch (game->mode) {
         case MODE_PROGRESSIVE:
             game->win_cond.type = WIN_SCORE_THRESHOLD;
-            game->win_cond.param_int_1 = 500;
+            game->win_cond.param_int_1 = WIN_PROGRESSIVE_SCORE;
             break;
         case MODE_ALTERNATE:
             game->win_cond.type = WIN_KILL_X_WITHIN_TIME;
-            game->win_cond.param_int_1 = 10;
-            game->win_cond.param_float_1 = 30.0f;
+            game->win_cond.param_int_1 = WIN_ALTERNATE_KILLS;
+            game->win_cond.param_float_1 = WIN_ALTERNATE_TIME;
             break;
         case MODE_RANDOM:
             game->win_cond.type = WIN_SURVIVAL_TIME;
-            game->win_cond.param_float_1 = 60.0f;
+            game->win_cond.param_float_1 = WIN_RANDOM_SURVIVAL;
             break;
         case MODE_WAVES:
             game->win_cond.type = WIN_SURVIVE_N_WAVES;
-            game->win_cond.param_int_1 = 5;
+            game->win_cond.param_int_1 = WIN_WAVES_COUNT;
             break;
         case MODE_FORMATIONS:
             game->win_cond.type = WIN_REACH_LEVEL;
-            game->win_cond.param_int_1 = 5;
+            game->win_cond.param_int_1 = WIN_FORMATIONS_LEVEL;
             break;
     }
 }
@@ -64,7 +65,7 @@ void game_start(game_t *game) {
     game->state = STATE_PLAYING;
     game->current_level = 1;
     game->score = 0;
-    game->lives = 3;
+    game->lives = INITIAL_LIVES;
     game->invuln_timer = 0.0f;
     game->enemies_spawned = 0;
     game->enemies_destroyed = 0;
@@ -73,7 +74,7 @@ void game_start(game_t *game) {
     game->waves_completed = 0;
 
     game->ship.x = SCREEN_WIDTH / 2;
-    game->ship.y = SCREEN_HEIGHT - 100;
+    game->ship.y = SCREEN_HEIGHT - SHIP_SPAWN_Y_OFFSET;
 
     difficulty_init(&game->difficulty, game->current_level);
     game->max_enemies = game->difficulty.enemy_count;
@@ -88,7 +89,7 @@ void game_fire(game_t *game) {
     for (int i = 0; i < MAX_PROJECTILES; i++) {
         if (!game->projectiles[i].active) {
             game->projectiles[i].x = game->ship.x;
-            game->projectiles[i].y = game->ship.y - 15;
+            game->projectiles[i].y = game->ship.y - FIRE_Y_OFFSET;
             game->projectiles[i].active = 1;
             return;
         }

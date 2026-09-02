@@ -1,5 +1,6 @@
 #include "collision.h"
 #include "enemy.h"
+#include "balance.h"
 #include <stdlib.h>
 
 #define PROJECTILE_HIT_RADIUS 15
@@ -52,7 +53,7 @@ void check_collisions(game_t *game) {
                 game->enemies[j].x, game->enemies[j].y, SHIP_HIT_RADIUS))
         {
             game->lives--;
-            game->invuln_timer = 2.0f;
+            game->invuln_timer = INVULN_DURATION;
 
             if (game->lives <= 0)
                 game->state = STATE_GAME_OVER;

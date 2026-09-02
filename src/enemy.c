@@ -1,5 +1,6 @@
 #include "enemy.h"
 #include "scheduler.h"
+#include "balance.h"
 #include <math.h>
 
 static const enemy_type_data_t ENEMY_DATA[] = {
@@ -34,10 +35,10 @@ void spawn_enemy(game_t *game) {
     enemy_type_t type = game->enemies[idx].type;
     const enemy_type_data_t *data = get_enemy_type_data(type);
 
-    game->enemies[idx].x = (int)(xorshift32(&game->rng_state) % (unsigned int)(SCREEN_WIDTH - 100)) + 50;
-    game->enemies[idx].y = -30;
+    game->enemies[idx].x = (int)(xorshift32(&game->rng_state) % (unsigned int)(SCREEN_WIDTH - ENEMY_SPAWN_X_MARGIN * 2)) + ENEMY_SPAWN_X_MARGIN;
+    game->enemies[idx].y = ENEMY_SPAWN_Y;
     game->enemies[idx].fx = (float)game->enemies[idx].x;
-    game->enemies[idx].fy = -30.0f;
+    game->enemies[idx].fy = (float)ENEMY_SPAWN_Y;
     game->enemies[idx].life = data->life;
     game->enemies[idx].max_life = data->life;
     game->enemies[idx].active = 1;
@@ -70,21 +71,21 @@ void update_enemies(game_t *game, float dt) {
                 break;
 
             case ENEMY_DART:
-                e->fx += (float)e->drift_direction * data->speed_y * 0.5f * dt;
+                e->fx += (float)e->drift_direction * data->speed_y * DART_DRIFT_FACTOR * dt;
                 e->fy += data->speed_y * dt;
                 break;
 
             case ENEMY_HOVER:
                 e->move_timer += dt;
-                if (e->move_timer < 2.0f) {
+                if (e->move_timer < HOVER_DRIFT_TIME) {
                     e->fx += (float)e->drift_direction * data->amplitude * dt;
                 } else {
-                    e->fy += data->speed_y * 2.0f * dt;
+                    e->fy += data->speed_y * HOVER_DIVE_FACTOR * dt;
                 }
                 break;
 
             case ENEMY_SWARM:
-                e->fx += data->amplitude * sinf(e->phase) * dt * 3.0f;
+                e->fx += data->amplitude * sinf(e->phase) * dt * SWARM_SWING_FACTOR;
                 e->fy += data->speed_y * dt;
                 break;
         }
@@ -92,8 +93,8 @@ void update_enemies(game_t *game, float dt) {
         e->x = (int)e->fx;
         e->y = (int)e->fy;
 
-        if (e->x < 20) { e->x = 20; e->fx = 20.0f; }
-        if (e->x > SCREEN_WIDTH - 20) { e->x = SCREEN_WIDTH - 20; e->fx = (float)(SCREEN_WIDTH - 20); }
+        if (e->x < ENEMY_X_MARGIN) { e->x = ENEMY_X_MARGIN; e->fx = (float)ENEMY_X_MARGIN; }
+        if (e->x > SCREEN_WIDTH - ENEMY_X_MARGIN) { e->x = SCREEN_WIDTH - ENEMY_X_MARGIN; e->fx = (float)(SCREEN_WIDTH - ENEMY_X_MARGIN); }
 
         if (e->y > SCREEN_HEIGHT) {
             e->active = 0;

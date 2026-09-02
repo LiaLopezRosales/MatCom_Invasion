@@ -1,9 +1,10 @@
 #include "game.h"
+#include "balance.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 int main(int argc, char **argv) {
-    unsigned int seed = 12345;
+    unsigned int seed = DEFAULT_SEED;
     if (argc > 1)
         seed = (unsigned int)strtoul(argv[1], NULL, 10);
 
@@ -20,7 +21,7 @@ int main(int argc, char **argv) {
 
     float time = 0.0f;
     int steps = 0;
-    while (game->state == STATE_PLAYING && steps < 10000) {
+    while (game->state == STATE_PLAYING && steps < MAX_HEADLESS_STEPS) {
         game_update(game, 1.0f / 60.0f);
         game_set_ship(game, game->ship.x + 1, game->ship.y);
 
