@@ -261,7 +261,7 @@ Progressive, timer en Random/Alternate y sin errores de consola.
 | 3 — Calidad / bugs | ✅ completa (§B audit 0 issues, §C balance.h, §D 65 tests, ASan clean) |
 | 4 — Contenido y dirección | ✅ completa (mecánica Waves/Formations + snapshot enriquecido; 78 tests, cobertura ~97%; deuda auditada y cerrada) |
 | 5 — Frontend + README | ✅ completa (UI funcional + verificada en headless; README raíz con badge CI + demo link; correcciones post-revisión y ronda 2 aplicadas; **queda screenshots reales → F7**) |
-| 6 — CI + GitHub Pages | ✅ casi completa (workflow definido: test+build+deploy desde Actions; `vite base './'` + rutas de assets relativas para Pages; badge CI en README; **falta push a `main` real + capturas → F7**) |
+| 6 — CI + GitHub Pages | ✅ completa (`deploy.yml` definido y **verificado en CI**: libcriterion-dev instalado, emsdk 6.0.9, Node 22; `vite base './'` + assets relativos; badge CI + demo live en `README`; smoke test parametrizable con `BASE_URL`) |
 | 7 — Governance y verificación | ⏳ pendiente |
 
 ## Decisiones abiertas / por confirmar
