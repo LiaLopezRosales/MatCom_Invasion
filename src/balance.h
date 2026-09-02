@@ -44,6 +44,10 @@
 #define WIN_WAVES_COUNT        5       /* SURVIVE_N_WAVES target */
 #define WIN_FORMATIONS_LEVEL   5       /* REACH_LEVEL target */
 
+/* ── Waves / Formations modes ───────────────────────────────────── */
+#define WAVE_ENEMIES_PER_WAVE  3       /* enemies spawned per wave burst */
+#define FORMATION_COLS         5       /* formation columns */
+
 /* ── Headless runner (main.c) ───────────────────────────────────── */
 #define DEFAULT_SEED           12345u
 #define MAX_HEADLESS_STEPS     10000

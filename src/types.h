@@ -88,6 +88,17 @@ typedef struct {
     int projectile_count;
     int enemy_count;
     int enemies_destroyed;
+
+    /* ── render data (Fase 4) ── */
+    game_mode_t mode;
+    int enemy_x[MAX_ENEMIES];
+    int enemy_y[MAX_ENEMIES];
+    int enemy_active[MAX_ENEMIES];
+    int enemy_type[MAX_ENEMIES];
+    int enemy_life[MAX_ENEMIES];
+    int projectile_x[MAX_PROJECTILES];
+    int projectile_y[MAX_PROJECTILES];
+    int projectile_active[MAX_PROJECTILES];
 } game_state_snapshot_t;
 
 #endif

@@ -17,12 +17,17 @@ extensible de la Fase 1 los admite.
 | Progressive (SJF) | Orden de aparición por vida ascendente (de más débil a más fuerte) |
 | Alternate (RR) | Alternancia real por tipo (intercala tipos, independiente de la vida) |
 | Random (FIFO) | Orden/mezcla aleatoria determinista (semilla) |
-| **Waves** (nuevo) | Los enemigos llegan en **oleadas**: ráfagas de spawn con pausas entre ellas |
-| **Formations** (nuevo) | Spawn en **formación** (fila/columna) que desciende en bloque |
+| **Waves** (nuevo) | Los enemigos llegan en **oleadas**: batch inmediato de `WAVE_ENEMIES_PER_WAVE` enemigos; al morir todos → siguiente oleada |
+| **Formations** (nuevo) | Spawn en **formación** (fila/columna) que desciende en bloque; al morir todos → siguiente nivel con formación más grande |
 
-> **Refactor de arquitectura (depende de Fase 1):** el modelo de aparición pasa de
-> *"secuencia de tipos"* a **eventos de spawn** `{tipo, retardo, posición X}`. Los
-> modos generan la cola/plan de eventos; `difficulty.c` sitúa los valores.
+> **Mecánica de spawn para Waves/Formations:** spawn **inmediato** de todos los
+> enemigos de la oleada/formación al inicio (sin `spawn_timer`). La detección
+> de "oleada/formación completada" se hace en `game_update` contando enemigos
+> activos: cuando `active_count == 0` y `enemies_spawned >= max_enemies` →
+> siguiente oleada o nivel.
+>
+> **Diferencia con Progressive/Alternate/Random:** estos 3 modos usan
+> `spawn_timer` gradual (un enemigo cada `spawn_interval` segundos).
 
 ## 2. Condiciones de victoria (5 tipos de `WinCondition`)
 
@@ -61,14 +66,12 @@ pendiente (fuera de alcance): **Splitter** (se divide al morir).
 - 0 vidas → `GAME_OVER`. Los enemigos que llegan al fondo → `GAME_OVER`
   (comportamiento original, se conserva).
 
-## 5. Power-ups (2 minimales)
+## 5. ~~Power-ups~~ (deferidos — fuera de scope Fase 4)
 
-- Caen de enemigos destruidos (probabilidad de drop), caída + pickup por la nave,
-  efecto con vida limitada:
-  - **Double Shot**: ráfaga doble (~8 s).
-  - **Shield**: absorbe 1 golpe (interacción definida con la inmunidad del respawn).
-- Entidades propias en el engine (drop con posición/velocidad/lifetime), validadas
-  por tests.
+> Los power-ups (Double Shot, Shield) se **retiran del scope** de la Fase 4.
+> Razón: la diferenciación del portafolio viene de la arquitectura (C→WASM,
+> scheduling algorithms, 5 modos), no de power-ups genéricos. Se pueden
+> mencionar como "future work" en el README.
 
 ## 6. Puntaje y high score
 
@@ -86,9 +89,14 @@ pendiente (fuera de alcance): **Splitter** (se divide al morir).
 
 ## 8. Validación
 
-- Extiende `FASE2_TESTS.md`: eventos de spawn (tipo+retardo+posición), cada
-  `WinCondition`, cada arquetipo/patrón de movimiento, power-ups
-  (drop/pickup/efecto/expiración), vidas/respawn/inmunidad.
+- Extiende `FASE2_TESTS.md`: eventos de spawn, cada `WinCondition`, cada
+  arquetipo/patrón de movimiento, vidas/respawn/inmunidad.
+- **Waves:** test de "wave cleared" detection, spawn inmediato de siguiente
+  oleada, victoria al completar N oleadas.
+- **Formations:** test de level advancement, spawn de nueva formación, victoria
+  al alcanzar nivel N.
+- **Snapshot enriquecido:** posiciones de enemigos/proyectiles en el snapshot,
+  counts correctos, modo actual.
 - Sim headless con semilla fija por modo, incluyendo los 2 modos nuevos.
 
 ## Relacionado

@@ -117,18 +117,21 @@ Resumen (entorno híbrido):
 > [`FASE4_DESIGN.md`](./FASE4_DESIGN.md).
 
 - **Scheduling (5 modos):** SJF/RR/FIFO pulidos (deterministas) + **Waves**
-  (oleadas) y **Formations** (fila/columna en bloque). Modelo: **eventos de spawn**
-  `{tipo, retardo, posición X}`.
+  (batches inmediatos + wave cleared detection) y **Formations** (formación en
+  bloque + level advancement).
 - **Condiciones de victoria (5 `WinCondition`):** `SCORE_THRESHOLD` (Progressive),
   `KILL_X_WITHIN_TIME` (Alternate), `SURVIVAL_TIME` (Random),
   `SURVIVE_N_WAVES` (Waves), `REACH_LEVEL` (Formations).
 - **Tipos de enemigos (5 data-driven):** Grunt, Tank, Dart, Hover (2 fases),
   Swarm. *Stretch:* Splitter.
 - **Vidas (3)** + respawn con inmunidad breve; 0 vidas o enemigos al fondo →
-  `GAME_OVER` (se conserva del original).
-- **Power-ups (2):** Double Shot (~8 s) y Shield (absorbe 1 golpe), drop de
-  enemigos con pickup por la nave.
+  `GAME_OVER` (implementado y testeado en Fases 1–2).
+- **~~Power-ups~~**: retirados del scope — ver `FASE4_FEATURES.md` §5.
 - **Puntaje** por tipo + **high score de sesión** (persistencia en Fase 5).
+- **Snapshot enriquecido** (Fase 4): posiciones/counts de enemigos y proyectiles
+  + modo actual, para que el frontend pueda renderizar (Fase 5).
+- **Dificultad procedural** en `difficulty.c` (intervalo de spawn, velocidad
+  global, mezcla de tipos; clampeada a `MAX_ENEMIES`).
 - **Dificultad procedural** en `difficulty.c` (intervalo de spawn, velocidad
   global, mezcla de tipos; clampeada a `MAX_ENEMIES`).
 - **Dirección de arte** — "neón espacial moderno": assets **Kenney (CC0)**
@@ -216,7 +219,7 @@ Resumen (entorno híbrido):
 | 1 — Migración del engine | ✅ completa (`fe1db18`, `2299172`) |
 | 2 — Tests del engine | ✅ completa (`33bf89e`, `fccf09e`; 50 tests, cobertura 95.86%) |
 | 3 — Calidad / bugs | ✅ completa (§B audit 0 issues, §C balance.h, §D 65 tests, ASan clean) |
-| 4 — Contenido y dirección | ⏳ pendiente (spec listo) |
+| 4 — Contenido y dirección | ⏳ en progreso (mecánica Waves/Formations + snapshot enriquecido) |
 | 5 — Frontend + README | ⏳ pendiente |
 | 6 — CI + GitHub Pages | ⏳ pendiente |
 | 7 — Governance y verificación | ⏳ pendiente |
@@ -242,9 +245,9 @@ Resumen (entorno híbrido):
 - [x] Fase 7 (governance): MIT, eliminar legacy, AGENTS.md completo, DoD final.
       → `FASE7_GOVERNANCE.md`
 - [x] Fase 4 (contenido y dirección): 5 modos de scheduling, 5 `WinCondition` por
-      modo, 5 tipos de enemigos, 3 vidas, power-ups, dificultad procedural,
-      dirección arte/UI/audio ("neón espacial moderno" + Kenney CC0 + Web Audio).
-      → `FASE4_FEATURES.md` + `FASE4_DESIGN.md`
+      modo, 5 tipos de enemigos, 3 vidas, dificultad procedural, dirección
+      arte/UI/audio ("neón espacial moderno" + Kenney CC0 + Web Audio).
+      **Power-ups retirados del scope** (deferido). → `FASE4_FEATURES.md` + `FASE4_DESIGN.md`
 
 ## Planes relacionados
 
