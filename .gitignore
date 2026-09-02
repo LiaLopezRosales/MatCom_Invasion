@@ -64,6 +64,14 @@ obj/
 /invasion
 /invasion_cli
 
+# Tests (Criterion) build artifacts
+tests/test_runner
+tests/cov_runner
+tests/cov_build/
+*.gcda
+*.gcno
+*.gcov
+
 # Node / frontend
 node_modules/
 .npm/

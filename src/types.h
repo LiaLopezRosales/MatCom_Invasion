@@ -59,6 +59,8 @@ typedef struct {
     enemy_type_t type;
     float move_timer;
     int drift_direction;
+    float fx;
+    float fy;
 } enemy_t;
 
 typedef struct {

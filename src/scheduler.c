@@ -1,4 +1,5 @@
 #include "scheduler.h"
+#include "enemy.h"
 #include <string.h>
 
 static unsigned int xorshift32(unsigned int *state) {
@@ -22,8 +23,27 @@ static enemy_type_t get_type_for_index(int index, int total) {
 
 static void generate_progressive(game_t *game) {
     int count = game->max_enemies;
+
+    // Build a good type distribution, then sort by ascending life (SJF:
+    // shortest job first = weaker enemies spawn before stronger ones).
+    enemy_type_t order[MAX_ENEMIES];
     for (int i = 0; i < count; i++)
-        game->enemies[i].type = get_type_for_index(i, count);
+        order[i] = get_type_for_index(i, count);
+
+    // insertion sort by ascending life (stable)
+    for (int i = 1; i < count; i++) {
+        enemy_type_t key = order[i];
+        int key_life = get_enemy_type_data(key)->life;
+        int j = i - 1;
+        while (j >= 0 && get_enemy_type_data(order[j])->life > key_life) {
+            order[j + 1] = order[j];
+            j--;
+        }
+        order[j + 1] = key;
+    }
+
+    for (int i = 0; i < count; i++)
+        game->enemies[i].type = order[i];
 }
 
 static void generate_alternate(game_t *game) {

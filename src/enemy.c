@@ -36,6 +36,8 @@ void spawn_enemy(game_t *game) {
 
     game->enemies[idx].x = (int)(xorshift32(&game->rng_state) % (unsigned int)(SCREEN_WIDTH - 100)) + 50;
     game->enemies[idx].y = -30;
+    game->enemies[idx].fx = (float)game->enemies[idx].x;
+    game->enemies[idx].fy = -30.0f;
     game->enemies[idx].life = data->life;
     game->enemies[idx].max_life = data->life;
     game->enemies[idx].active = 1;
@@ -58,35 +60,40 @@ void update_enemies(game_t *game, float dt) {
 
         e->phase += data->frequency * dt;
 
+        // Accumulate position in float for frame-rate independent movement,
+        // then derive the integer coordinates used by collision and rendering.
         switch (e->type) {
             case ENEMY_GRUNT:
             case ENEMY_TANK:
-                e->x += (int)(data->amplitude * sinf(e->phase) * dt);
-                e->y += (int)(data->speed_y * dt);
+                e->fx += data->amplitude * sinf(e->phase) * dt;
+                e->fy += data->speed_y * dt;
                 break;
 
             case ENEMY_DART:
-                e->x += (int)(e->drift_direction * data->speed_y * 0.5f * dt);
-                e->y += (int)(data->speed_y * dt);
+                e->fx += (float)e->drift_direction * data->speed_y * 0.5f * dt;
+                e->fy += data->speed_y * dt;
                 break;
 
             case ENEMY_HOVER:
                 e->move_timer += dt;
                 if (e->move_timer < 2.0f) {
-                    e->x += (int)(e->drift_direction * data->amplitude * dt);
+                    e->fx += (float)e->drift_direction * data->amplitude * dt;
                 } else {
-                    e->y += (int)(data->speed_y * 2.0f * dt);
+                    e->fy += data->speed_y * 2.0f * dt;
                 }
                 break;
 
             case ENEMY_SWARM:
-                e->x += (int)(data->amplitude * sinf(e->phase) * dt * 3.0f);
-                e->y += (int)(data->speed_y * dt);
+                e->fx += data->amplitude * sinf(e->phase) * dt * 3.0f;
+                e->fy += data->speed_y * dt;
                 break;
         }
 
-        if (e->x < 20) e->x = 20;
-        if (e->x > SCREEN_WIDTH - 20) e->x = SCREEN_WIDTH - 20;
+        e->x = (int)e->fx;
+        e->y = (int)e->fy;
+
+        if (e->x < 20) { e->x = 20; e->fx = 20.0f; }
+        if (e->x > SCREEN_WIDTH - 20) { e->x = SCREEN_WIDTH - 20; e->fx = (float)(SCREEN_WIDTH - 20); }
 
         if (e->y > SCREEN_HEIGHT) {
             e->active = 0;
