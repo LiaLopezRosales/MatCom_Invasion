@@ -1,0 +1,95 @@
+import type { MatComModule } from "./wasm";
+
+export interface GameSnapshot {
+  state: number;
+  score: number;
+  high_score: number;
+  lives: number;
+  current_level: number;
+  ship_x: number;
+  ship_y: number;
+  projectile_count: number;
+  enemy_count: number;
+  enemies_destroyed: number;
+}
+
+export const SNAPSHOT_FIELDS = 10;
+
+export const GameState = {
+  MENU: 0,
+  PLAYING: 1,
+  PAUSED: 2,
+  GAME_OVER: 3,
+  VICTORY: 4,
+} as const;
+
+export const GameMode = {
+  PROGRESSIVE: 0,
+  ALTERNATE: 1,
+  RANDOM: 2,
+  WAVES: 3,
+  FORMATIONS: 4,
+} as const;
+
+export class Game {
+  private module!: MatComModule;
+  private ptr = 0;
+
+  async init(): Promise<void> {
+    if (!window.createMatComModule) {
+      throw new Error("WASM module factory not found");
+    }
+    this.module = await window.createMatComModule();
+    this.ptr = this.module._game_create(12345);
+  }
+
+  setMode(mode: number): void {
+    this.module._game_set_mode(this.ptr, mode);
+  }
+
+  start(): void {
+    this.module._game_start(this.ptr);
+  }
+
+  update(dt: number): void {
+    this.module._game_update(this.ptr, dt);
+  }
+
+  setShip(x: number, y: number): void {
+    this.module._game_set_ship(this.ptr, x, y);
+  }
+
+  fire(): void {
+    this.module._game_fire(this.ptr);
+  }
+
+  getState(): GameSnapshot {
+    const size = SNAPSHOT_FIELDS * 4;
+    const buf = this.module._malloc(size);
+    try {
+      this.module._game_get_state(this.ptr, buf);
+      const view = new DataView(this.module.HEAPU8.buffer, buf, size);
+      return {
+        state: view.getInt32(0, true),
+        score: view.getInt32(4, true),
+        high_score: view.getInt32(8, true),
+        lives: view.getInt32(12, true),
+        current_level: view.getInt32(16, true),
+        ship_x: view.getInt32(20, true),
+        ship_y: view.getInt32(24, true),
+        projectile_count: view.getInt32(28, true),
+        enemy_count: view.getInt32(32, true),
+        enemies_destroyed: view.getInt32(36, true),
+      };
+    } finally {
+      this.module._free(buf);
+    }
+  }
+
+  destroy(): void {
+    if (this.ptr) {
+      this.module._game_destroy(this.ptr);
+      this.ptr = 0;
+    }
+  }
+}
