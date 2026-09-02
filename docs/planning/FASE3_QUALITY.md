@@ -47,6 +47,11 @@
 
 ## B. Typos y nomenclatura
 
+> **Estado tras Fase 3 (2026-09-02):** auditoría completa en los 17 archivos
+> (`src/` + `web/src/`). 0 comentarios/identificadores en español. Convención
+> de nombres verificada: `snake_case` (funciones/variables C), `PascalCase`
+> (tipos TS), `UPPER_CASE` (macros/constants). Código ya estaba en inglés.
+
 - `drawWinnLevelOne/Two/Three`, `drawWinn` ("Winn") → el render C se elimina; fijar
   convención clara en el engine (p. ej. `victory_*`).
 - "projectil" → en inglés: `projectile`.
@@ -60,11 +65,22 @@
 
 ## C. Deuda leve (refactors a aplicar en la Fase 1)
 
-- **Constantes mágicas** → al modelo data-driven/`balance`: `±15`, `±40`,
-  `HEIGHT-98`, spawn `2/3/4 s`, velocidad `5`, `6.5*sin(...)`, frame counters.
-- Velocidades/movimiento ondulado → parámetros por enemigo y por nivel.
+> **Estado tras Fase 3 (2026-09-02):** constantes mágicas extraídas a
+> `src/balance.h` (commit `4382362`). Radios, márgenes, temporizadores,
+> fórmulas de dificultad, umbrales de victoria y parámetros de movimiento —
+> todos con nombre.
+
+- **Constantes mágicas** → `src/balance.h`: `INVULN_DURATION`, `ENEMY_SPAWN_Y`,
+  `ENEMY_X_MARGIN`, `DART_DRIFT_FACTOR`, `HOVER_DRIFT_TIME`, `DIFF_BASE_*`,
+  `WIN_*_SCORE`/`WIN_*_KILLS`/`WIN_*_TIME`, etc.
+- Velocidades/movimiento ondulado → parámetros por enemigo (`ENEMY_DATA` en
+  `enemy.c`, data-driven) y por nivel (`difficulty.c`).
 
 ## D. Higiene y memoria
+
+> **Estado tras Fase 3 (2026-09-02):** 65 tests con ASan+UBSan, 0 fugas, 0
+> overflow. Suite de robustez (`test_robustness.c`) valida NULL safety,
+> límites de array, niveles extremos y transiciones rápidas.
 
 - Engine C puro sin fugas/UB: `make test` con **ASan + UBSan**
   (`-fsanitize=address,undefined`).
@@ -85,6 +101,9 @@
   (`-Wall -Wextra -Werror`, ASan+UBSan, 0 fugas; cobertura 95.86%).
 - Pendiente real para Fase 3: §B auditoría final de nomenclatura, §C limpieza
   de constantes mágicas residuales y robustez/fuzzing de casos borde.
+
+> **Fase 3 completada (2026-09-02):** §B limpia (0 problemas), §C extraído a
+> `balance.h`, §D 65 tests verdes con ASan+UBSan, cobertura 95.86%, 0 fugas.
 
 ## Relacionado
 
