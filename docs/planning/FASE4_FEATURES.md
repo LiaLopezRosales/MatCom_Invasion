@@ -6,9 +6,12 @@
 > está en [`FASE4_DESIGN.md`](./FASE4_DESIGN.md). Solo lógica C: los tests de la
 > Fase 2 y la sim headless validan todo lo decidido aquí.
 >
-> **Estado (2026-09-02):** contenido lógico implementado (Waves/Formations,
-> snapshot enriquecido; power-ups fuera de scope). La **dirección de arte, HUD,
-> menús y audio** se implementa en la Fase 5.
+> **Estado (2026-09-02):** contenido lógico implementado y **auditoría de deuda
+> cerrada** (Waves/Formations, snapshot enriquecido; power-ups fuera de scope).
+> Debt fixeada: wave progression ya no avanza tras GAME_OVER; oleadas Waves con
+> mezcla de tipos variada; layout del snapshot protegido con `_Static_assert`;
+> constantes de mezcla nombradas. La **dirección de arte, HUD, menús y audio**
+> se implementa en la Fase 5.
 
 ## 1. Modos de scheduling (5)
 
