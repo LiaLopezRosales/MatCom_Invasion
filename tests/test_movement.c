@@ -94,9 +94,31 @@ Test(movement, large_dt_is_clamped) {
     game_t *g = game_create(1);
     game_set_mode(g, MODE_RANDOM);
     game_start(g);
-    // A huge dt must not corrupt state (clamped in frontend, engine tolerates)
+    // A huge dt must be clamped (engine caps frames) without corrupting state.
+    float survival_before = g->survival_timer;
     game_update(g, 10.0f);
+    // clamped to 1.0, so survival advances by at most 1s
+    cr_assert(g->survival_timer - survival_before <= 1.0f + 1e-6,
+              "large dt should be clamped to 1.0s, advanced by %f",
+              (double)(g->survival_timer - survival_before));
     cr_assert(g->state == STATE_PLAYING || g->state == STATE_GAME_OVER ||
               g->state == STATE_VICTORY, "state should remain valid after large dt");
+    game_destroy(g);
+}
+
+Test(movement, negative_dt_is_sanitized) {
+    game_t *g = game_create(1);
+    game_set_mode(g, MODE_RANDOM);
+    game_start(g);
+
+    float survival_before = g->survival_timer;
+    float spawn_before = g->spawn_timer;
+    game_update(g, -5.0f); // must not run timers backwards
+
+    cr_assert(g->survival_timer >= survival_before,
+              "negative dt must not decrease survival_timer");
+    cr_assert(g->spawn_timer >= spawn_before,
+              "negative dt must not decrease spawn_timer");
+    cr_assert(g->state == STATE_PLAYING, "state stays valid after negative dt");
     game_destroy(g);
 }

@@ -135,6 +135,11 @@ static void check_win_condition(game_t *game) {
 void game_update(game_t *game, float dt) {
     if (!game || game->state != STATE_PLAYING) return;
 
+    // Sanitize dt: reject negative and cap oversized frames so timers and
+    // movement stay deterministic and never run backwards (Phase 2).
+    if (dt < 0.0f) dt = 0.0f;
+    if (dt > 1.0f) dt = 1.0f;
+
     game->survival_timer += dt;
 
     if (game->invuln_timer > 0.0f)
