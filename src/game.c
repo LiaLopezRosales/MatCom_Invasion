@@ -56,6 +56,11 @@ static void configure_win_condition(game_t *game) {
     }
 }
 
+static void spawn_immediate_batch(game_t *game);
+static int compute_formation_size(int level);
+static int count_active_enemies(const game_t *game);
+static void check_wave_progression(game_t *game);
+
 void game_start(game_t *game) {
     if (!game) return;
 
@@ -77,10 +82,42 @@ void game_start(game_t *game) {
     game->ship.y = SCREEN_HEIGHT - SHIP_SPAWN_Y_OFFSET;
 
     difficulty_init(&game->difficulty, game->current_level);
-    game->max_enemies = game->difficulty.enemy_count;
 
     configure_win_condition(game);
+
+    if (game->mode == MODE_WAVES) {
+        game->max_enemies = WAVE_ENEMIES_PER_WAVE;
+        game->waves_completed = 0;
+        spawn_immediate_batch(game);
+    } else if (game->mode == MODE_FORMATIONS) {
+        game->current_level = 1;
+        game->max_enemies = compute_formation_size(game->current_level);
+        spawn_immediate_batch(game);
+    } else {
+        game->max_enemies = game->difficulty.enemy_count;
+        scheduler_generate_order(game);
+    }
+}
+
+static void spawn_immediate_batch(game_t *game) {
+    game->enemies_spawned = 0;
     scheduler_generate_order(game);
+    for (int i = 0; i < game->max_enemies; i++)
+        spawn_enemy(game);
+}
+
+static int compute_formation_size(int level) {
+    int size = FORMATION_COLS * level;
+    if (size > MAX_ENEMIES) size = MAX_ENEMIES;
+    if (size < 1) size = 1;
+    return size;
+}
+
+static int count_active_enemies(const game_t *game) {
+    int count = 0;
+    for (int i = 0; i < MAX_ENEMIES; i++)
+        if (game->enemies[i].active) count++;
+    return count;
 }
 
 void game_fire(game_t *game) {
@@ -147,7 +184,8 @@ void game_update(game_t *game, float dt) {
         game->invuln_timer -= dt;
 
     game->spawn_timer += dt;
-    if (game->enemies_spawned < game->max_enemies &&
+    if (game->mode != MODE_WAVES && game->mode != MODE_FORMATIONS &&
+        game->enemies_spawned < game->max_enemies &&
         game->spawn_timer >= game->difficulty.spawn_interval) {
         game->spawn_timer = 0.0f;
         spawn_enemy(game);
@@ -156,7 +194,25 @@ void game_update(game_t *game, float dt) {
     update_projectiles(game, dt);
     update_enemies(game, dt);
     check_collisions(game);
+    check_wave_progression(game);
     check_win_condition(game);
+}
+
+static void check_wave_progression(game_t *game) {
+    if (game->mode != MODE_WAVES && game->mode != MODE_FORMATIONS) return;
+
+    /* wave/formation cleared only once every enemy of it has spawned and died */
+    if (count_active_enemies(game) > 0) return;
+    if (game->enemies_spawned < game->max_enemies) return;
+
+    if (game->mode == MODE_WAVES) {
+        game->waves_completed++;
+        spawn_immediate_batch(game);
+    } else { /* MODE_FORMATIONS */
+        game->current_level++;
+        game->max_enemies = compute_formation_size(game->current_level);
+        spawn_immediate_batch(game);
+    }
 }
 
 void game_pause(game_t *game) {
@@ -187,9 +243,25 @@ void game_get_state(const game_t *game, game_state_snapshot_t *snap) {
             snap->projectile_count++;
 
     snap->enemy_count = 0;
-    for (int i = 0; i < MAX_ENEMIES; i++)
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        snap->enemy_x[i] = game->enemies[i].x;
+        snap->enemy_y[i] = game->enemies[i].y;
+        snap->enemy_active[i] = game->enemies[i].active;
+        snap->enemy_type[i] = (int)game->enemies[i].type;
+        snap->enemy_life[i] = game->enemies[i].life;
         if (game->enemies[i].active)
             snap->enemy_count++;
+    }
+
+    snap->projectile_count = 0;
+    for (int i = 0; i < MAX_PROJECTILES; i++) {
+        snap->projectile_x[i] = game->projectiles[i].x;
+        snap->projectile_y[i] = game->projectiles[i].y;
+        snap->projectile_active[i] = game->projectiles[i].active;
+        if (game->projectiles[i].active)
+            snap->projectile_count++;
+    }
 
     snap->enemies_destroyed = game->enemies_destroyed;
+    snap->mode = game->mode;
 }

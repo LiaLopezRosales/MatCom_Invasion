@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "game.h"
 #include "enemy.h"
+#include "balance.h"
 
 Test(scheduling, progressive_sorts_by_life_ascending) {
     game_t *g = game_create(1);
@@ -105,10 +106,14 @@ Test(scheduling, spawn_never_exceeds_max_enemies) {
 }
 
 Test(scheduling, max_enemies_respected) {
+    /* Formations spawns a full immediate formation at level 1:
+       5 columns x 1 row = 5 enemies (not the gradual difficulty count). */
     game_t *g = game_create(6);
     game_set_mode(g, MODE_FORMATIONS);
     game_start(g);
-    cr_assert(g->max_enemies == 4, "level 1 progressive/formation spawns 4 (min difficulty)");
+    cr_assert(g->max_enemies == FORMATION_COLS,
+              "level 1 formation should spawn FORMATION_COLS enemies, got %d",
+              g->max_enemies);
     cr_assert(g->max_enemies <= MAX_ENEMIES, "max_enemies must not exceed MAX_ENEMIES");
     game_destroy(g);
 }
