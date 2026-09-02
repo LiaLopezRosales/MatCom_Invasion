@@ -3,13 +3,104 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="MatCom Invasion — a neon space shooter with five scheduling modes, ported from C to the browser via WebAssembly."
+    />
     <title>MatCom Invasion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
     <div id="app">
-      <div id="loading">Loading WASM...</div>
-      <canvas id="game-canvas" width="1920" height="1080"></canvas>
+      <!-- Loading screen -->
+      <div id="loading" class="overlay active">
+        <div class="spinner"></div>
+        <div class="loading-title">MatCom Invasion</div>
+        <div class="loading-sub">booting engine…</div>
+        <div id="loading-error" class="loading-error" hidden></div>
+      </div>
+
+      <!-- Game shell: canvas + HUD + menus -->
+      <div id="shell" hidden>
+        <div id="hud" class="hud">
+          <span class="hud-item hud-lives" id="hud-lives" title="Lives"></span>
+          <span class="hud-item hud-score"><span class="hud-label">SCORE</span><span id="hud-score">0</span></span>
+          <span class="hud-item hud-level"><span class="hud-label">LEVEL</span><span id="hud-level">1</span></span>
+          <span class="hud-item hud-mode"><span class="hud-label">MODE</span><span id="hud-mode">—</span></span>
+          <span class="hud-item hud-high"><span class="hud-label">BEST</span><span id="hud-high">0</span></span>
+          <div class="hud-actions">
+            <button id="btn-sound" class="icon-btn" title="Toggle music">♪</button>
+            <button id="btn-fullscreen" class="icon-btn" title="Fullscreen">⛶</button>
+          </div>
+        </div>
+
+        <div id="stage">
+          <canvas id="game-canvas" width="1920" height="1080"></canvas>
+
+          <!-- Mode Select -->
+          <div id="menu-mode" class="menu-overlay active">
+            <h1 class="menu-title">MATCOM<br />INVASION</h1>
+            <p class="menu-tagline">Five scheduling modes. One survivor.</p>
+            <div id="mode-cards" class="mode-cards"></div>
+            <button id="btn-howto" class="btn btn-ghost">How to play</button>
+          </div>
+
+          <!-- How to Play -->
+          <div id="menu-howto" class="menu-overlay">
+            <div class="panel">
+              <h2>How to play</h2>
+              <ul class="howto-list">
+                <li><b>Move</b> — point your mouse to steer the ship.</li>
+                <li><b>Shoot</b> — click / hold to fire at enemies.</li>
+                <li><b>Pause</b> — press <kbd>Esc</kbd>.</li>
+                <li><b>Lose a life</b> — collide with an enemy.</li>
+                <li><b>Game over</b> — lose all lives, or an enemy reaches the bottom.</li>
+                <li>Each mode has its own victory condition (see the cards).</li>
+              </ul>
+              <button id="btn-back-mode" class="btn">Back</button>
+            </div>
+          </div>
+
+          <!-- Pause -->
+          <div id="menu-pause" class="menu-overlay">
+            <div class="panel">
+              <h2>Paused</h2>
+              <button id="btn-resume" class="btn">Resume</button>
+              <button id="btn-quit-pause" class="btn btn-ghost">Quit to menu</button>
+            </div>
+          </div>
+
+          <!-- Game Over -->
+          <div id="menu-gameover" class="menu-overlay">
+            <div class="panel">
+              <h2 class="text-danger">Game Over</h2>
+              <p class="result-score">Score <span id="go-score">0</span></p>
+              <p class="result-best">Best <span id="go-best">0</span></p>
+              <button id="btn-restart" class="btn">Restart</button>
+              <button id="btn-mode-gameover" class="btn btn-ghost">Mode select</button>
+            </div>
+          </div>
+
+          <!-- Victory -->
+          <div id="menu-victory" class="menu-overlay">
+            <div class="panel">
+              <h2 class="text-victory">Victory!</h2>
+              <p class="result-score">Score <span id="vic-score">0</span></p>
+              <p class="result-best">Best <span id="vic-best">0</span></p>
+              <button id="btn-playagain" class="btn">Play again</button>
+              <button id="btn-mode-victory" class="btn btn-ghost">Mode select</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
     <script src="/matcom_logic.js"></script>
     <script type="module" src="/src/main.ts"></script>
   </body>

@@ -220,7 +220,7 @@ Resumen (entorno híbrido):
 | 2 — Tests del engine | ✅ completa (`33bf89e`, `fccf09e`; 50 tests, cobertura 95.86%) |
 | 3 — Calidad / bugs | ✅ completa (§B audit 0 issues, §C balance.h, §D 65 tests, ASan clean) |
 | 4 — Contenido y dirección | ✅ completa (mecánica Waves/Formations + snapshot enriquecido; 78 tests, cobertura ~97%; deuda auditada y cerrada) |
-| 5 — Frontend + README | ⏳ en progreso |
+| 5 — Frontend + README | ⏳ casi completo (UI funcional y verificada en navegador headless; falta el README raíz + screenshots, demo link en F6) |
 | 6 — CI + GitHub Pages | ⏳ pendiente |
 | 7 — Governance y verificación | ⏳ pendiente |
 

@@ -1,0 +1,13 @@
+#
+# Space Shooter (Redux) sprites by Kenney Vleugels (www.kenney.nl)
+# -----------------------------------------------------------------
+# License: CC0 (Public Domain)
+# https://creativecommons.org/publicdomain/zero/1.0/
+#
+# These graphics may be used in personal and commercial projects.
+# Credit (Kenney or www.kenney.nl) is appreciated but not mandatory.
+#
+# Files in this directory were selected from the "Space Shooter Redux"
+# pack and tinted neon by the renderer at runtime.
+#
+# See the project README for full asset credits.

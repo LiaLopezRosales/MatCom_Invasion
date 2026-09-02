@@ -80,6 +80,14 @@ export class Game {
     this.module._game_fire(this.ptr);
   }
 
+  pause(): void {
+    this.module._game_pause(this.ptr);
+  }
+
+  resume(): void {
+    this.module._game_resume(this.ptr);
+  }
+
   getState(): GameSnapshot {
     const size = SNAPSHOT_FIELDS * 4;
     const buf = this.module._malloc(size);

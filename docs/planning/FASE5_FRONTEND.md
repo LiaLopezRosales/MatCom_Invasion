@@ -1,5 +1,12 @@
 # Fase 5 — Frontend web + README (detalle)
 
+> **Estado de implementación:** la UI completa (canvas + HUD + menús + input +
+> audio + WASM loading) está **implementada y verificada** con un smoke test
+> headless (Playwright/Chromium: 5 cards de modo, inicio de partida, HUD, sin
+> errores de consola). Assets Kenney CC0 commiteados en `web/public/assets/`.
+> **Pendiente:** README raíz (este documento es el spec) y capturas reales para el
+> README (se cierran en F6 con el deploy).
+
 > Documento de soporte del [`POLISH_PLAN.md`](./POLISH_PLAN.md). Define la
 > implementación del **frontend web** (sobre el spec de
 > [`FASE4_DESIGN.md`](./FASE4_DESIGN.md)) y el **README**. La lógica de juego
@@ -72,7 +79,8 @@ Mode Select ──▶ Playing ──┬─▶ Pause (ESC)
 ## 8. Assets
 
 - **Kenney Space Shooter Redux (CC0)**: selección de naves, enemigos (5 tipos),
-  proyectiles, power-ups, fondo.
+  proyectiles, fondo. Descargado como ZIP CC0 desde **OpenGameArt** (kenney.nl
+  está detrás de bot-protection); ver `web/public/assets/LICENSE.txt`.
 - **Tipografía**: Google Fonts **Orbitron** (OFL).
 - Los PNG originales del juego (licencia desconocida) se **sustituyen**.
 
@@ -99,7 +107,7 @@ Mode Select ──▶ Playing ──┬─▶ Pause (ESC)
 - **Node/npm** (ya disponible).
 - **Vite** (devDependency, se instala con `npm install`).
 - **TypeScript** (devDependency).
-- **Kenney Space Shooter Redux** (CC0, descargado de kenney.nl).
+- **Kenney Space Shooter Redux** (CC0, ZIP vía OpenGameArt).
 - **Google Fonts Orbitron** (OFL, cargado vía CDN en HTML).
 
 ## 11. Scripts npm
