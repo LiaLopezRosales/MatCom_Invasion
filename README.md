@@ -32,7 +32,7 @@ codebase into a maintainable, tested, multi-platform game.
 
 ## Play it
 
-> 🕹️ **Play the live demo:** < https://lialopezrosales.github.io/MatCom_Invasion/>
+> 🕹️ **Play the live demo:** [https://lialopezrosales.github.io/MatCom_Invasion/](https://lialopezrosales.github.io/MatCom_Invasion/)
 >
 > Deployed automatically to GitHub Pages by the [CI pipeline](.github/workflows/deploy.yml)
 > on every push to `main`.
