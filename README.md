@@ -14,6 +14,7 @@ codebase into a maintainable, tested, multi-platform game.
 ## Table of Contents
 
 - [Play it](#play-it)
+- [Screenshots](#screenshots)
 - [Features](#features)
 - [Game modes](#game-modes)
 - [Architecture](#architecture)
@@ -36,6 +37,16 @@ codebase into a maintainable, tested, multi-platform game.
 > Deployed automatically to GitHub Pages by the [CI pipeline](.github/workflows/deploy.yml)
 > on every push to `main`.
 
+
+---
+
+## Screenshots
+
+Captured automatically from the live demo build.
+
+| Menu | Gameplay — Progressive | Gameplay — Random (survival) |
+|------|------------------------|------------------------------|
+| ![Menu](docs/portfolio/screenshots/01-menu.png) | ![Progressive](docs/portfolio/screenshots/02-gameplay-progressive.png) | ![Random](docs/portfolio/screenshots/03-gameplay-random.png) |
 
 ---
 
