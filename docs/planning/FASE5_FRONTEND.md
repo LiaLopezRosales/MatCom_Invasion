@@ -2,10 +2,11 @@
 
 > **Estado de implementación:** la UI completa (canvas + HUD + menús + input +
 > audio + WASM loading) está **implementada y verificada** con un smoke test
-> headless (Playwright/Chromium: 5 cards de modo, inicio de partida, HUD, sin
-> errores de consola). Assets Kenney CC0 commiteados en `web/public/assets/`.
-> **Pendiente:** README raíz (este documento es el spec) y capturas reales para el
-> README (se cierran en F6 con el deploy).
+> headless (Playwright/Chromium: batch de 6 en Progressive, timers en
+> Random/Alternate, high score persistente por modo, descripciones de modos sin
+> jerga técnica, sin errores de consola). Assets Kenney CC0 commiteados en
+> `web/public/assets/`. README raíz creado y actualizado. **Pendiente:** capturas
+> reales del juego para el README (se cierran en F6 con el deploy).
 
 > Documento de soporte del [`POLISH_PLAN.md`](./POLISH_PLAN.md). Define la
 > implementación del **frontend web** (sobre el spec de
@@ -25,7 +26,7 @@
 
 Barra superior fija fuera del canvas (HTML/CSS):
 - **Vidas** (3, iconos del pack Kenney), **puntaje**, **nivel**, **modo** y
-  **high score de sesión**.
+  **high score persistente por modo** (guardado en `localStorage`).
 - Tipografía **Orbitron** (Google Fonts, OFL).
 - Transiciones CSS al actualizar valores (fade sutil).
 

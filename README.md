@@ -57,11 +57,11 @@ codebase into a maintainable, tested, multi-platform game.
 
 | Mode | Spawn strategy | Win condition |
 |------|----------------|---------------|
-| **Progressive** | Weakest enemies first (Shortest-Job-First) | Reach 500 points |
-| **Alternate** | Enemy types interleaved (Round Robin) | 10 kills in 30s |
-| **Random** | Deterministic shuffled spawns (FIFO) | Survive 60s |
+| **Progressive** | The weak come first; difficulty ramps each wave | Reach 500 points |
+| **Alternate** | All enemy types mix together | 10 kills in 30s |
+| **Random** | Random hordes from all types | Survive 45s |
 | **Waves** | Enemies arrive in bursts | Clear 5 waves |
-| **Formations** | Enemies descend in blocks | Reach level 6 |
+| **Formations** | Structured squadrons descend in blocks | Reach level 6 |
 
 ---
 
@@ -127,9 +127,10 @@ cd web && npm run build   # outputs web/dist/
 npm run preview           # serve the production build locally
 ```
 
-> Headless browser smoke test (`web/`): with a dev server running, a Playwright
-> script loads the page, starts a game, drives ship movement + firing and asserts
-> zero console/page errors.
+> Headless browser smoke test (`web/smoke.test.mjs`): with a dev server running,
+> a Playwright script boots the app, starts every mode, asserts the spawn batch,
+> the visible countdown timer (Random/Alternate), persistent high scores, and
+> jargon-free mode descriptions, with zero console/page errors.
 
 ---
 

@@ -42,7 +42,7 @@ Mode Select ──▶ Playing ──┬─▶ Pause
 
 ### HUD (barra superior)
 
-- **Vidas** (3), **puntaje**, **nivel**, **modo** y **high score de sesión**.
+- **Vidas** (3), **puntaje**, **nivel**, **modo** y **high score persistente por modo**.
 - Tipografía Orbitron; iconos pequeños del pack (vidas = icono nave).
 
 ### Controles (concepto)

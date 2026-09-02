@@ -127,7 +127,7 @@ Resumen (entorno híbrido):
 - **Vidas (3)** + respawn con inmunidad breve; 0 vidas o enemigos al fondo →
   `GAME_OVER` (implementado y testeado en Fases 1–2).
 - **~~Power-ups~~**: retirados del scope — ver `FASE4_FEATURES.md` §5.
-- **Puntaje** por tipo + **high score de sesión** (persistencia en Fase 5).
+- **Puntaje** por tipo + **high score persistente por modo** (localStorage, F5).
 - **Snapshot enriquecido** (Fase 4): posiciones/counts de enemigos y proyectiles
   + modo actual, para que el frontend pueda renderizar (Fase 5).
 - **Dificultad procedural** en `difficulty.c` (intervalo de spawn, velocidad
@@ -260,7 +260,7 @@ Progressive, timer en Random/Alternate y sin errores de consola.
 | 2 — Tests del engine | ✅ completa (`33bf89e`, `fccf09e`; 50 tests, cobertura 95.86%) |
 | 3 — Calidad / bugs | ✅ completa (§B audit 0 issues, §C balance.h, §D 65 tests, ASan clean) |
 | 4 — Contenido y dirección | ✅ completa (mecánica Waves/Formations + snapshot enriquecido; 78 tests, cobertura ~97%; deuda auditada y cerrada) |
-| 5 — Frontend + README | ⏳ casi completo (UI funcional y verificada en navegador headless; falta el README raíz + screenshots, demo link en F6) |
+| 5 — Frontend + README | ✅ casi completo (UI funcional + verificada en headless; README raíz creado; correcciones post-revisión y ronda 2 aplicadas; **queda screenshots reales + demo link → F6**) |
 | 6 — CI + GitHub Pages | ⏳ pendiente |
 | 7 — Governance y verificación | ⏳ pendiente |
 
