@@ -11,9 +11,26 @@ export interface GameSnapshot {
   projectile_count: number;
   enemy_count: number;
   enemies_destroyed: number;
+
+  mode: number;
+  enemy_x: Int32Array;
+  enemy_y: Int32Array;
+  enemy_active: Int32Array;
+  enemy_type: Int32Array;
+  enemy_life: Int32Array;
+  projectile_x: Int32Array;
+  projectile_y: Int32Array;
+  projectile_active: Int32Array;
 }
 
-export const SNAPSHOT_FIELDS = 10;
+const MAX_ENEMIES = 10;
+const MAX_PROJECTILES = 15;
+
+export const SNAPSHOT_FIELDS =
+  10 + // base scalar fields (see order in game_state_snapshot_t)
+  1 + // mode
+  MAX_ENEMIES * 5 + // enemy x/y/active/type/life
+  MAX_PROJECTILES * 3; // projectile x/y/active
 
 export const GameState = {
   MENU: 0,
@@ -69,6 +86,28 @@ export class Game {
     try {
       this.module._game_get_state(this.ptr, buf);
       const view = new DataView(this.module.HEAPU8.buffer, buf, size);
+
+      const enemy_x = new Int32Array(MAX_ENEMIES);
+      const enemy_y = new Int32Array(MAX_ENEMIES);
+      const enemy_active = new Int32Array(MAX_ENEMIES);
+      const enemy_type = new Int32Array(MAX_ENEMIES);
+      const enemy_life = new Int32Array(MAX_ENEMIES);
+      const projectile_x = new Int32Array(MAX_PROJECTILES);
+      const projectile_y = new Int32Array(MAX_PROJECTILES);
+      const projectile_active = new Int32Array(MAX_PROJECTILES);
+
+      let o = 10; // after the base scalars
+      const mode = view.getInt32(o * 4, true);
+      o++;
+      for (let i = 0; i < MAX_ENEMIES; i++, o++) enemy_x[i] = view.getInt32(o * 4, true);
+      for (let i = 0; i < MAX_ENEMIES; i++, o++) enemy_y[i] = view.getInt32(o * 4, true);
+      for (let i = 0; i < MAX_ENEMIES; i++, o++) enemy_active[i] = view.getInt32(o * 4, true);
+      for (let i = 0; i < MAX_ENEMIES; i++, o++) enemy_type[i] = view.getInt32(o * 4, true);
+      for (let i = 0; i < MAX_ENEMIES; i++, o++) enemy_life[i] = view.getInt32(o * 4, true);
+      for (let i = 0; i < MAX_PROJECTILES; i++, o++) projectile_x[i] = view.getInt32(o * 4, true);
+      for (let i = 0; i < MAX_PROJECTILES; i++, o++) projectile_y[i] = view.getInt32(o * 4, true);
+      for (let i = 0; i < MAX_PROJECTILES; i++, o++) projectile_active[i] = view.getInt32(o * 4, true);
+
       return {
         state: view.getInt32(0, true),
         score: view.getInt32(4, true),
@@ -80,6 +119,15 @@ export class Game {
         projectile_count: view.getInt32(28, true),
         enemy_count: view.getInt32(32, true),
         enemies_destroyed: view.getInt32(36, true),
+        mode,
+        enemy_x,
+        enemy_y,
+        enemy_active,
+        enemy_type,
+        enemy_life,
+        projectile_x,
+        projectile_y,
+        projectile_active,
       };
     } finally {
       this.module._free(buf);
