@@ -69,11 +69,16 @@ static void generate_random(game_t *game) {
 
 static void generate_waves(game_t *game) {
     int count = game->max_enemies;
-    int wave_size = 3;
-    for (int i = 0; i < count; i++) {
-        int wave_index = i / wave_size;
-        game->enemies[i].type = get_type_for_index(wave_index, count / wave_size + 1);
-    }
+    if (count <= 0) return;
+
+    /* A single wave is one immediate batch. Distribute the five enemy types so
+       each wave is a varied mix, and rotate the mix with the wave number so
+       successive waves differ (still deterministic from the seed). */
+    enemy_type_t types[] = {ENEMY_GRUNT, ENEMY_TANK, ENEMY_DART, ENEMY_HOVER, ENEMY_SWARM};
+    const int num_types = 5;
+    int rotation = (int)(game->waves_completed % (unsigned int)num_types);
+    for (int i = 0; i < count; i++)
+        game->enemies[i].type = types[(i + rotation) % num_types];
 }
 
 static void generate_formations(game_t *game) {

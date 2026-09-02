@@ -100,6 +100,34 @@ Test(waves, game_over_if_wave_enemy_reaches_bottom) {
     game_destroy(g);
 }
 
+Test(waves, game_over_does_not_advance_remaining_waves) {
+    game_t *g = game_create(1);
+    game_set_mode(g, MODE_WAVES);
+    game_start(g);
+
+    /* Drop every enemy past the bottom edge. One large clamped frame (dt=1.0)
+       moves even the slowest enemy (Tank, 40px/s) past SCREEN_HEIGHT, so all
+       of them are cleaned up and GAME_OVER is set in that same frame. */
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+        if (!g->enemies[i].active) continue;
+        g->enemies[i].y = SCREEN_HEIGHT - 5;
+        g->enemies[i].fy = (float)(SCREEN_HEIGHT - 5);
+    }
+    game_update(g, 1.0f);
+
+    cr_assert(g->state == STATE_GAME_OVER);
+    /* wave progression must NOT run once the game has ended; otherwise a
+       fresh wave would spawn after GAME_OVER mutating game state */
+    cr_assert(g->waves_completed == 0,
+              "game over should not advance waves_completed (got %d)",
+              g->waves_completed);
+    int active = 0;
+    for (int i = 0; i < MAX_ENEMIES; i++)
+        if (g->enemies[i].active) active++;
+    cr_assert(active == 0, "no new wave should spawn after GAME_OVER, active=%d", active);
+    game_destroy(g);
+}
+
 Test(formations, starts_with_full_formation) {
     game_t *g = game_create(1);
     game_set_mode(g, MODE_FORMATIONS);

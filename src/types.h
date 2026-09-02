@@ -101,4 +101,12 @@ typedef struct {
     int projectile_active[MAX_PROJECTILES];
 } game_state_snapshot_t;
 
+/* Layout guard: the web loader (web/src/game.ts) reads this snapshot as a flat
+   sequence of int32 words. All fields are int/enum (4 bytes) with no padding, so
+   the byte size must equal (11 scalars + 5*MAX_ENEMIES + 3*MAX_PROJECTILES) * 4.
+   If this ever changes, update SNAPSHOT_FIELDS in web/src/game.ts in sync. */
+_Static_assert(sizeof(game_state_snapshot_t) ==
+               (11 + 5 * MAX_ENEMIES + 3 * MAX_PROJECTILES) * sizeof(int),
+               "game_state_snapshot_t layout must match web/src/game.ts SNAPSHOT_FIELDS");
+
 #endif

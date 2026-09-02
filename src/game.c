@@ -200,6 +200,9 @@ void game_update(game_t *game, float dt) {
 
 static void check_wave_progression(game_t *game) {
     if (game->mode != MODE_WAVES && game->mode != MODE_FORMATIONS) return;
+    /* never advance the wave/level once the game has ended (e.g. an enemy
+       reached the bottom this frame and set GAME_OVER in update_enemies). */
+    if (game->state != STATE_PLAYING) return;
 
     /* wave/formation cleared only once every enemy of it has spawned and died */
     if (count_active_enemies(game) > 0) return;
