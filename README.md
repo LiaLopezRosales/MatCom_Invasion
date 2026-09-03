@@ -1,10 +1,12 @@
-# MatCom Invasion — Web Port
+# MatCom Invasion
 
-A modern, neon-styled re-imagining of a classic retro arcade game, rebuilt as a
-hybrid **C → WebAssembly + TypeScript/Vite** app. The entire game engine runs in
-compiled C (ported to WASM), while the UI is a TypeScript SPA.
+A **C → WebAssembly** arcade shooter with a TypeScript frontend, neon aesthetics
+and synthesized audio — built to demonstrate a clean migration from a monolithic
+C codebase into a maintainable, tested, multi-platform game.
 
 [![CI](https://github.com/LiaLopezRosales/MatCom_Invasion/actions/workflows/deploy.yml/badge.svg)](https://github.com/LiaLopezRosales/MatCom_Invasion/actions/workflows/deploy.yml)
+[![Coverage](https://img.shields.io/badge/coverage-97%25-brightgreen)](docs/planning/FASE2_TESTS.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 This is a portfolio project demonstrating a clean migration from a monolithic C
 codebase into a maintainable, tested, multi-platform game.

@@ -22,11 +22,18 @@ COV_LIBS   := -fprofile-arcs -ftest-coverage -lm $(CRITERION_LIBS)
 COV_OBJS   := $(patsubst $(SRC_DIR)/%.c,$(COV_DIR)/%.o,$(SRC_FILES)) \
               $(patsubst %.c,$(COV_DIR)/%.o,$(TEST_FILES))
 
-.PHONY: test coverage clean
+.PHONY: test coverage coverage-gate clean
 
 test: test_runner
 	./test_runner --verbose
 	@echo "== TESTS PASSED =="
+
+# Gate: fail if total line coverage < COVERAGE_THRESHOLD (default 90%).
+COVERAGE_THRESHOLD ?= 90
+coverage-gate: cov_runner
+	@cd $(COV_DIR) && ../cov_runner --quiet > /dev/null 2>&1 || true
+	@cd $(COV_DIR) && gcov -o . $(SRC_FILES:../%=../../%) 2>/dev/null | grep "Lines executed" \
+		| awk -F'[:,%]' '{sum+=$$2; n++} END { if (n) { total=sum/n; printf "== TOTAL COVERAGE: %.2f%% ==\n", total; if (total < $(COVERAGE_THRESHOLD)) { printf "COVERAGE GATE FAILED (threshold $(COVERAGE_THRESHOLD)%%)\n"; exit 1 } else { printf "COVERAGE GATE PASSED (threshold $(COVERAGE_THRESHOLD)%%)\n" } } else { print "no coverage data"; exit 1 } }'
 
 test_runner: $(TEST_FILES) $(SRC_FILES)
 	$(CC) $(TEST_CFLAGS) -o $@ $(TEST_FILES) $(SRC_FILES) $(TEST_LIBS)

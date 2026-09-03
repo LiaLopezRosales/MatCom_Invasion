@@ -51,6 +51,9 @@ jobs:
       - name: Run C tests (ASan/UBSan)
         run: make test
 
+      - name: Gate coverage (>= 90%)
+        run: make coverage-gate
+
       - name: Build WASM module
         run: make wasm
 

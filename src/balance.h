@@ -1,6 +1,14 @@
 #ifndef BALANCE_H
 #define BALANCE_H
 
+/**
+ * Central tuning constants for gameplay balance.
+ *
+ * All gameplay-facing numbers live here so they can be adjusted without touching
+ * logic code.  The values below produce a steady difficulty ramp across all five
+ * game modes (see POLISH_PLAN.md §Phase 4 for the rationale).
+ */
+
 /* ── Player ─────────────────────────────────────────────────────── */
 #define INITIAL_LIVES          3
 #define INVULN_DURATION        2.0f    /* seconds after a ship hit */

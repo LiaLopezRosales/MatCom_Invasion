@@ -6,6 +6,7 @@
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
 
+/** Finite-state machine that drives the frontend. */
 typedef enum {
     STATE_MENU,
     STATE_PLAYING,
@@ -14,14 +15,16 @@ typedef enum {
     STATE_VICTORY
 } game_state_t;
 
+/** Five scheduling modes, each with a distinct spawn pattern. */
 typedef enum {
-    MODE_PROGRESSIVE,
-    MODE_ALTERNATE,
-    MODE_RANDOM,
-    MODE_WAVES,
-    MODE_FORMATIONS
+    MODE_PROGRESSIVE,   /* weakest-first batches that scale each wave */
+    MODE_ALTERNATE,     /* round-robin interleaving of all types */
+    MODE_RANDOM,        /* deterministic shuffled hordes */
+    MODE_WAVES,         /* timed burst waves */
+    MODE_FORMATIONS     /* grid formations that grow per level */
 } game_mode_t;
 
+/** The five enemy archetypes. */
 typedef enum {
     ENEMY_GRUNT,
     ENEMY_TANK,
@@ -30,6 +33,7 @@ typedef enum {
     ENEMY_SWARM
 } enemy_type_t;
 
+/** Win-condition discriminant for each game mode. */
 typedef enum {
     WIN_SCORE_THRESHOLD,
     WIN_KILL_X_WITHIN_TIME,
@@ -63,6 +67,7 @@ typedef struct {
     float fy;
 } enemy_t;
 
+/** Data-driven win condition.  Interpretation of the int/float params depends on type. */
 typedef struct {
     win_type_t type;
     int param_int_1;

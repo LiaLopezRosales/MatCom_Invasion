@@ -14,7 +14,7 @@ WASM_FLAGS := -std=c11 -O2 -Wall -Wextra -Werror -Isrc
 SRCS := $(wildcard $(SRC_DIR)/*.c)
 OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD)/%.o,$(SRCS))
 
-.PHONY: all native wasm test coverage clean
+.PHONY: all native wasm test coverage coverage-gate clean
 
 all: native
 
@@ -43,6 +43,9 @@ test:
 
 coverage:
 	$(MAKE) -C tests coverage
+
+coverage-gate:
+	$(MAKE) -C tests coverage-gate
 
 $(BUILD) $(WASM_OUT):
 	mkdir -p $@
